@@ -4,11 +4,86 @@ using UnityEngine;
 
 namespace TankGame
 {
+    [RequireComponent(typeof(IMover))]
     public abstract class Unit : MonoBehaviour
     {
+        [SerializeField]
+        private float moveSpeed = 5f;
+
+        [SerializeField]
+        private float turnSpeed = 5f;
+
+        [SerializeField]
+        private GameObject tankHead;
+
+        [SerializeField]
+        private Projectile projectilePrefab;
+
+        private IMover mover;
+        private IMover headMover;
+        private IMover barrelMover;
+
+        private BarrelTip barrelTip;
+
+        private void Awake()
+        {
+            Init();
+        }
+
         public virtual void Init()
         {
+            mover = gameObject.GetOrAddComponent<TransformMover>();
+            mover.Init(moveSpeed, turnSpeed);
 
+            TransformMover[] headMovers =
+                tankHead.GetComponentsInChildren<TransformMover>();
+            headMover = headMovers[0];
+            barrelMover = headMovers[1];
+
+            headMover.Init(0f, turnSpeed);
+            barrelMover.Init(0f, turnSpeed);
+
+            barrelTip = GetComponentInChildren<BarrelTip>();
+        }
+
+        protected IMover Mover
+        {
+            get
+            {
+                return mover;
+            }
+        }
+
+        protected IMover TankHeadMover
+        {
+            get
+            {
+                return headMover;
+            }
+        }
+
+        protected IMover BarrelMover
+        {
+            get
+            {
+                return barrelMover;
+            }
+        }
+
+        public virtual void Fire()
+        {
+            // Calculates the firing direction:
+            // from the barrel's base to its tip in world space
+            Vector3 firingDirection = barrelTip.transform.position - ((TransformMover) barrelMover).transform.position;
+
+            // Changes the firing direction vector's distance to 1
+            float distance = Vector3.Distance(barrelTip.transform.position, ((TransformMover) barrelMover).transform.position);
+            float value = 1 / distance;
+            firingDirection = firingDirection * value;
+
+            // Creates a nwe projectile
+            Projectile newProjectile = Instantiate(projectilePrefab);
+            newProjectile.Init(barrelTip.transform.position, firingDirection, 20);
         }
 
         public virtual void Clear()
