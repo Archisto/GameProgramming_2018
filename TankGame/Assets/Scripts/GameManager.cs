@@ -7,6 +7,6 @@ namespace TankGame
 {
     public class GameManager : MonoBehaviour
     {
-        private List<Hole> a;
+        
     }
 }

@@ -29,7 +29,59 @@ namespace TankGame
             return component;
         }
 
-        public static Vector3 NormalizeLargeVector3(this Vector3 vector)
+        public static TComponent GetComponentInInactiveParent<TComponent>
+            (this GameObject gameObject)
+            where TComponent : Component
+        {
+            TComponent result = null;
+
+            if (gameObject.transform.parent != null)
+            {
+                GameObject parent = gameObject.transform.parent.gameObject;
+
+                result = parent.GetComponent<TComponent>();
+
+                if (result == null)
+                {
+                    result = parent.GetComponentInInactiveParent<TComponent>();
+                }
+            }
+
+            return result;
+        }
+
+        public static TComponent GetComponentInHierarchy<TComponent>
+            (this GameObject gameObject, bool includeInactive = false)
+            where TComponent : Component
+        {
+            TComponent result = gameObject.GetComponent<TComponent>();
+            if (result != null && !includeInactive && !result.gameObject.activeSelf)
+            {
+                result = null;
+            }
+
+            if (result == null)
+            {
+                result = gameObject.GetComponentInParent<TComponent>();
+                if (includeInactive)
+                {
+                    result = gameObject.GetComponentInInactiveParent<TComponent>();
+                }
+                else
+                {
+                    result = gameObject.GetComponentInParent<TComponent>();
+                }
+            }
+
+            if (result == null)
+            {
+                result = gameObject.GetComponentInChildren<TComponent>(includeInactive);
+            }
+
+            return result;
+        }
+
+        public static Vector3 CompressLargeVector3(this Vector3 vector)
         {
             while (vector.x > 360)
             {

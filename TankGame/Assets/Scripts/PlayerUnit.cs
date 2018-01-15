@@ -39,8 +39,7 @@ namespace TankGame
                 Fire();
             }
 
-            leftTreads = (transform.localPosition + 2 * Vector3.left);
-            rightTreads = (transform.localPosition + 2 * Vector3.right);
+            UpdateTreadsPositions();
         }
 
         private Vector3 ReadMovementInput()
@@ -64,31 +63,70 @@ namespace TankGame
             return Input.GetButtonDown("Fire1");
         }
 
+        private void UpdateTreadsPositions()
+        {
+            leftTreads = transform.position;
+            rightTreads = transform.position;
+
+            var rot = Quaternion.AngleAxis(90, Vector3.up);
+            var localDirection = rot * Vector3.forward;
+            var worldDirection = transform.TransformDirection(localDirection);
+
+            leftTreads += worldDirection * 0.6f;
+            rightTreads -= worldDirection * 0.6f;
+
+            //leftTreads = ((Vector4) transform.localPosition + transform.worldToLocalMatrix * Vector3.left);
+            //rightTreads = ((Vector4) transform.localPosition + transform.worldToLocalMatrix * Vector3.right);
+
+            //leftTreads.z = leftTreads.z * -1;
+            //rightTreads.z = rightTreads.z * -1;
+
+            leftTreads.y = 0.5f;
+            rightTreads.y = 0.5f;
+        }
+
         private void OnDrawGizmos()
         {
-            if (input != null)
+            //if (input != Vector3.zero)
             {
-                Vector3 leftTarget = leftTreads;
-                Vector3 rightTarget = rightTreads;
+                var forwardDir = transform.TransformDirection(Vector3.forward);
 
-                if (input.x < 0)
+                float leftTurning = (input.x > 0 ? input.x : 0);
+                float rightTurning = (input.x < 0 ? -1f * input.x : 0);
+
+                if (input.y < 0)
                 {
-                    rightTarget += Vector3.forward;
+                    leftTurning = -1f * leftTurning;
+                    rightTurning = -1f * rightTurning;
                 }
-                else if (input.x > 0)
+
+                float leftLength = input.y - leftTurning / 2;
+                float rightLength = input.y - rightTurning / 2;
+
+                Vector3 leftTarget = leftTreads + leftLength * forwardDir;
+                Vector3 rightTarget = rightTreads + rightLength * forwardDir;
+
+                if (leftLength >= 0)
                 {
-                    leftTarget += Vector3.forward;
+                    Gizmos.color = Color.blue;
                 }
                 else
                 {
-                    leftTarget += Vector3.forward;
-                    rightTarget += Vector3.forward;
+                    Gizmos.color = Color.red;
                 }
 
-                Gizmos.color = Color.red;
+                Gizmos.DrawLine(leftTreads, leftTarget);
 
-                Gizmos.DrawLine(transform.localToWorldMatrix * leftTreads, transform.localToWorldMatrix * leftTarget);
-                Gizmos.DrawLine(transform.localToWorldMatrix * rightTreads, transform.localToWorldMatrix * rightTarget);
+                if (rightLength >= 0)
+                {
+                    Gizmos.color = Color.blue;
+                }
+                else
+                {
+                    Gizmos.color = Color.red;
+                }
+
+                Gizmos.DrawLine(rightTreads, rightTarget);
             }
         }
     }

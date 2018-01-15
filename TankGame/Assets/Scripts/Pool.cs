@@ -3,28 +3,30 @@ using UnityEngine;
 
 namespace TankGame
 {
-	public class GameObjectPool : MonoBehaviour
+	public class Pool<T>
+        where T : Component
 	{
 		// The initial size of the pool.
-		[SerializeField]
 		private int _poolSize;
 
 		// The prefab from which all objects in the pool are instantiated.
-		[SerializeField]
-		private GameObject _objectPrefab;
+		private T _objectPrefab;
 
 		// When the pool runs out of objects, should the pool grow or just
 		// return null.
-		[SerializeField]
 		private bool _shouldGrow;
 
 		// The list containing all the objects in this pool.
-		private List< GameObject > _pool;
+		private List< T > _pool;
 
-		protected void Awake()
+		public Pool(T objectPrefab, int poolSize, bool shouldGrow)
 		{
-			// Initialize the pool by adding '_poolSize' amount of objects to the pool.
-			_pool = new List< GameObject >( _poolSize );
+            _objectPrefab = objectPrefab;
+            _poolSize = poolSize;
+            _shouldGrow = shouldGrow;
+
+            // Initialize the pool by adding '_poolSize' amount of objects to the pool.
+            _pool = new List< T >( _poolSize );
 
 			for ( int i = 0; i < _poolSize; ++i )
 			{
@@ -37,53 +39,53 @@ namespace TankGame
 		/// </summary>
 		/// <param name="isActive">Should the object be active when it is added to the pool or not.</param>
 		/// <returns>The object added to the pool.</returns>
-		private GameObject AddObject( bool isActive = false )
+		private T AddObject( bool isActive = false )
 		{
-			// Instantiate pooled objects under this parent.
-			GameObject go = Instantiate( _objectPrefab, transform );
+			// Instantiate pooled objects.
+			T component = Object.Instantiate( _objectPrefab );
 
 			if ( isActive )
 			{
-				Activate( go );
+				Activate( component );
 			}
 			else
 			{
-				Deactivate( go );
+				Deactivate( component );
 			}
 
-			_pool.Add( go );
+			_pool.Add( component );
 
-			return go;
+			return component;
 		}
 
 		/// <summary>
 		/// Called when the object is returned to the pool. Deactivates the object.
 		/// </summary>
-		/// <param name="go">Object to deactivate</param>
-		protected virtual void Deactivate( GameObject go )
+		/// <param name="component">Object to deactivate</param>
+		protected virtual void Deactivate( T component )
 		{
-			go.SetActive( false );
+			component.gameObject.SetActive( false );
 		}
 
 		/// <summary>
 		/// Called when the object is fetched from the pool. Activates the object.
 		/// </summary>
-		/// <param name="go">Object to activate</param>
-		protected virtual void Activate( GameObject go )
+		/// <param name="component">Object to activate</param>
+		protected virtual void Activate( T component )
 		{
-			go.SetActive( true );
+			component.gameObject.SetActive( true );
 		}
 
 		/// <summary>
 		/// Fetches the object form the pool.
 		/// </summary>
 		/// <returns>An object from the pool or if all objects are already in use and pool cannot grow, returns null</returns>
-		public GameObject GetPooledObject()
+		public T GetPooledObject()
 		{
-			GameObject result = null;
+			T result = null;
 			for ( int i = 0; i < _pool.Count; i++ )
 			{
-				if ( _pool[ i ].activeSelf == false )
+				if ( _pool[ i ].gameObject.activeSelf == false )
 				{
 					result = _pool[ i ];
 					break; // Jumps out from the loop.
@@ -109,17 +111,17 @@ namespace TankGame
 		/// <summary>
 		/// Returns an object back to the pool.
 		/// </summary>
-		/// <param name="go">The object which should be returned to the pool.</param>
+		/// <param name="component">The object which should be returned to the pool.</param>
 		/// <returns>Could the object be returned back to the pool.</returns>
-		public bool ReturnObject( GameObject go )
+		public bool ReturnObject( T component )
 		{
 			bool result = false;
 
-			foreach ( GameObject pooledObject in _pool )
+			foreach ( var pooledObject in _pool )
 			{
-				if ( pooledObject == go )
+				if ( pooledObject == component )
 				{
-					Deactivate( go );
+					Deactivate( component );
 					result = true;
 					break;
 				}

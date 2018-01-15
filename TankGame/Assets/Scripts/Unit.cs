@@ -32,6 +32,12 @@ namespace TankGame
 
         public virtual void Init()
         {
+            Weapon = GetComponentInChildren<Weapon>();
+            if (Weapon != null)
+            {
+                Weapon.Init(this);
+            }
+
             mover = gameObject.GetOrAddComponent<TransformMover>();
             mover.Init(moveSpeed, turnSpeed);
 
@@ -45,6 +51,8 @@ namespace TankGame
 
             barrelTip = GetComponentInChildren<BarrelTip>();
         }
+
+        public Weapon Weapon { get; protected set; }
 
         protected IMover Mover
         {
