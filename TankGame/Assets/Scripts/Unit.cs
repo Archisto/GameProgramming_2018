@@ -77,9 +77,7 @@ namespace TankGame
             Vector3 firingDirection = barrelTip.transform.position - ((TransformMover) barrelMover).transform.position;
 
             // Changes the firing direction vector's distance to 1
-            float distance = Vector3.Distance(barrelTip.transform.position, ((TransformMover) barrelMover).transform.position);
-            float value = 1 / distance;
-            firingDirection = firingDirection * value;
+            firingDirection.Normalize();
 
             // Creates a nwe projectile
             Projectile newProjectile = Instantiate(projectilePrefab);

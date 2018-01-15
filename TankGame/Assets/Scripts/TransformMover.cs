@@ -17,11 +17,11 @@ namespace TankGame
 
         public void Move(Vector3 input)
         {
-            MoveUnit(input.y);
-            TurnUnit(input.x);
+            Move(input.y);
+            Turn(input.x);
         }
 
-        public void MoveUnit(float amount)
+        public void Move(float amount)
         {
             Vector3 position = transform.position;
             Vector3 movement = transform.forward * amount * moveSpeed * Time.deltaTime;
@@ -29,19 +29,19 @@ namespace TankGame
             transform.position = position;
         }
 
-        public void TurnUnit(float amount)
+        public void Turn(float amount)
         {
             float rotation = amount * turnSpeed * Time.deltaTime;
             transform.Rotate(Vector3.up, rotation, Space.Self);
         }
 
-        public void TurnUnitAxis(Vector3 axis, float amount)
+        public void TurnAxis(Vector3 axis, float amount)
         {
             float rotation = amount * turnSpeed * Time.deltaTime;
             transform.Rotate(axis, rotation, Space.Self);
         }
 
-        public void TurnUnitAxis(Vector3 axis, float amount, float min, float max)
+        public void TurnAxis(Vector3 axis, float amount, float min, float max)
         {
             Quaternion oldRotation = transform.rotation;
 

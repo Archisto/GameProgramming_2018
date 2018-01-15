@@ -20,20 +20,27 @@ namespace TankGame
         [SerializeField]
         private string cannonVerticalAxis = "Cannon Vertical";
 
+        private Vector3 input;
+        private Vector3 leftTreads;
+        private Vector3 rightTreads;
+
         protected override void Update()
         {
-            Vector3 input = ReadMovementInput();
+            input = ReadMovementInput();
             Vector3 cannonInput = ReadCannonInput();
 
             Mover.Move(input);
 
-            ((TransformMover) TankHeadMover).TurnUnitAxis(Vector3.up, cannonInput.x);
-            ((TransformMover) BarrelMover).TurnUnitAxis(Vector3.right, -1f * cannonInput.y, -25f, 6.5f);
+            ((TransformMover) TankHeadMover).TurnAxis(Vector3.up, cannonInput.x);
+            ((TransformMover) BarrelMover).TurnAxis(Vector3.right, -1f * cannonInput.y, -25f, 6.5f);
 
             if (ReadFiringInput())
             {
                 Fire();
             }
+
+            leftTreads = (transform.localPosition + 2 * Vector3.left);
+            rightTreads = (transform.localPosition + 2 * Vector3.right);
         }
 
         private Vector3 ReadMovementInput()
@@ -55,6 +62,34 @@ namespace TankGame
         private bool ReadFiringInput()
         {
             return Input.GetButtonDown("Fire1");
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (input != null)
+            {
+                Vector3 leftTarget = leftTreads;
+                Vector3 rightTarget = rightTreads;
+
+                if (input.x < 0)
+                {
+                    rightTarget += Vector3.forward;
+                }
+                else if (input.x > 0)
+                {
+                    leftTarget += Vector3.forward;
+                }
+                else
+                {
+                    leftTarget += Vector3.forward;
+                    rightTarget += Vector3.forward;
+                }
+
+                Gizmos.color = Color.red;
+
+                Gizmos.DrawLine(transform.localToWorldMatrix * leftTreads, transform.localToWorldMatrix * leftTarget);
+                Gizmos.DrawLine(transform.localToWorldMatrix * rightTreads, transform.localToWorldMatrix * rightTarget);
+            }
         }
     }
 }
