@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,30 +20,47 @@ namespace TankGame
 		// The list containing all the objects in this pool.
 		private List< T > _pool;
 
-		public Pool(T objectPrefab, int poolSize, bool shouldGrow)
+        // The pooled objects' initialization method
+        private Action<T> _initMethod;
+
+        public Pool(T objectPrefab, int poolSize, bool shouldGrow)
 		{
             _objectPrefab = objectPrefab;
             _poolSize = poolSize;
             _shouldGrow = shouldGrow;
 
             // Initialize the pool by adding '_poolSize' amount of objects to the pool.
-            _pool = new List< T >( _poolSize );
+            _pool = new List<T>(_poolSize);
 
-			for ( int i = 0; i < _poolSize; ++i )
-			{
-				AddObject();
-			}
-		}
+            for (int i = 0; i < _poolSize; ++i)
+            {
+                AddObject();
+            }
+        }
 
-		/// <summary>
-		/// Adds an object to the pool.
-		/// </summary>
-		/// <param name="isActive">Should the object be active when it is added to the pool or not.</param>
-		/// <returns>The object added to the pool.</returns>
-		private T AddObject( bool isActive = false )
+        public Pool(T objectPrefab, int poolSize, bool shouldGrow, Action<T> initMethod)
+            : this(objectPrefab, poolSize, shouldGrow)
+        {
+            _initMethod = initMethod;
+
+            foreach (var item in _pool)
+            {
+                if (_initMethod != null)
+                {
+                    _initMethod(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds an object to the pool.
+        /// </summary>
+        /// <param name="isActive">Should the object be active when it is added to the pool or not.</param>
+        /// <returns>The object added to the pool.</returns>
+        private T AddObject( bool isActive = false )
 		{
 			// Instantiate pooled objects.
-			T component = Object.Instantiate( _objectPrefab );
+			T component = UnityEngine.Object.Instantiate( _objectPrefab );
 
 			if ( isActive )
 			{
@@ -76,11 +94,12 @@ namespace TankGame
 			component.gameObject.SetActive( true );
 		}
 
-		/// <summary>
-		/// Fetches the object form the pool.
-		/// </summary>
-		/// <returns>An object from the pool or if all objects are already in use and pool cannot grow, returns null</returns>
-		public T GetPooledObject()
+        /// <summary>
+        /// Fetches the object form the pool.
+        /// </summary>
+        /// <returns>An object from the pool or if all objects are
+        /// already in use and pool cannot grow, returns null</returns>
+        public T GetPooledObject()
 		{
 			T result = null;
 			for ( int i = 0; i < _pool.Count; i++ )

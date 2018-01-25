@@ -16,9 +16,6 @@ namespace TankGame
         [SerializeField]
         private GameObject tankHead;
 
-        [SerializeField]
-        private Projectile projectilePrefab;
-
         private IMover mover;
         private IMover headMover;
         private IMover barrelMover;
@@ -80,16 +77,18 @@ namespace TankGame
 
         public virtual void Fire()
         {
-            // Calculates the firing direction:
-            // from the barrel's base to its tip in world space
-            Vector3 firingDirection = barrelTip.transform.position - ((TransformMover) barrelMover).transform.position;
+            Weapon.Fire();
 
-            // Changes the firing direction vector's distance to 1
-            firingDirection.Normalize();
+            //// Calculates the firing direction:
+            //// from the barrel's base to its tip in world space
+            //Vector3 firingDirection = barrelTip.transform.position - ((TransformMover) barrelMover).transform.position;
 
-            // Creates a nwe projectile
-            Projectile newProjectile = Instantiate(projectilePrefab);
-            newProjectile.Init(barrelTip.transform.position, firingDirection, 20);
+            //// Changes the firing direction vector's distance to 1
+            //firingDirection.Normalize();
+
+            //// Creates a nwe projectile
+            //Projectile newProjectile = Instantiate(projectilePrefab);
+            //newProjectile.Init(barrelTip.transform.position, firingDirection, 20);
         }
 
         public virtual void Clear()

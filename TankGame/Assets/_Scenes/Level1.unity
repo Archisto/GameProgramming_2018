@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 21155053}
   - component: {fileID: 21155052}
   - component: {fileID: 21155051}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LeftTreads
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 278792318}
   - component: {fileID: 278792317}
   - component: {fileID: 278792316}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -292,7 +292,7 @@ GameObject:
   - component: {fileID: 332597949}
   - component: {fileID: 332597948}
   - component: {fileID: 332597947}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -378,7 +378,7 @@ GameObject:
   - component: {fileID: 574943877}
   - component: {fileID: 574943876}
   - component: {fileID: 574943875}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RightTreads
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -525,7 +525,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 827778166}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Environment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -559,7 +559,7 @@ GameObject:
   - component: {fileID: 908422714}
   - component: {fileID: 908422716}
   - component: {fileID: 908422715}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -605,6 +605,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 114997426961152536, guid: 26d081cefc1dda643aa3e3877b04b436,
     type: 2}
+  firingRate: 0.33333334
+  shootingPoint: {fileID: 1780644628}
 --- !u!1 &956545767
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,7 +618,7 @@ GameObject:
   - component: {fileID: 956545771}
   - component: {fileID: 956545770}
   - component: {fileID: 956545769}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -699,7 +701,7 @@ GameObject:
   - component: {fileID: 1069237107}
   - component: {fileID: 1069237109}
   - component: {fileID: 1069237108}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PlayerTank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -748,8 +750,6 @@ MonoBehaviour:
   moveSpeed: 3
   turnSpeed: 40
   tankHead: {fileID: 1905111382}
-  projectilePrefab: {fileID: 114997426961152536, guid: 26d081cefc1dda643aa3e3877b04b436,
-    type: 2}
   horizontalAxis: Horizontal
   verticalAxis: Vertical
   cannonHorizontalAxis: Cannon Horizontal
@@ -765,7 +765,7 @@ GameObject:
   - component: {fileID: 1072727298}
   - component: {fileID: 1072727297}
   - component: {fileID: 1072727296}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -838,6 +838,49 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1072727294}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1151353357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1151353359}
+  - component: {fileID: 1151353358}
+  m_Layer: 0
+  m_Name: DebugLine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1151353358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1151353357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 460ad10cde80c8742b16f7e017bbadf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: {r: 1, g: 0, b: 0, a: 1}
+  from: {x: 0, y: 0, z: 0}
+  to: {x: 0, y: 0, z: 0}
+--- !u!4 &1151353359
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1151353357}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1191442093
 GameObject:
   m_ObjectHideFlags: 0
@@ -848,7 +891,7 @@ GameObject:
   - component: {fileID: 1191442094}
   - component: {fileID: 1191442097}
   - component: {fileID: 1191442095}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -920,7 +963,7 @@ GameObject:
   - component: {fileID: 1214545051}
   - component: {fileID: 1214545050}
   - component: {fileID: 1214545049}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -1000,7 +1043,7 @@ GameObject:
   - component: {fileID: 1393278905}
   - component: {fileID: 1393278904}
   - component: {fileID: 1393278903}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1084,7 +1127,7 @@ GameObject:
   - component: {fileID: 1453213828}
   - component: {fileID: 1453213827}
   - component: {fileID: 1453213826}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1166,7 +1209,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1780644628}
   - component: {fileID: 1780644629}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BarrelTip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1208,7 +1251,7 @@ GameObject:
   - component: {fileID: 1798350533}
   - component: {fileID: 1798350532}
   - component: {fileID: 1798350531}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HeadPart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1290,7 +1333,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1905111383}
   - component: {fileID: 1905111384}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}

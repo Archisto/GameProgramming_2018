@@ -34,7 +34,7 @@ namespace TankGame
             ((TransformMover) TankHeadMover).TurnAxis(Vector3.up, cannonInput.x);
             ((TransformMover) BarrelMover).TurnAxis(Vector3.right, -1f * cannonInput.y, -25f, 6.5f);
 
-            if (ReadFiringInput())
+            if (ReadShootingInput())
             {
                 Fire();
             }
@@ -58,7 +58,7 @@ namespace TankGame
             return new Vector3(turning, tilt);
         }
 
-        private bool ReadFiringInput()
+        private bool ReadShootingInput()
         {
             return Input.GetButtonDown("Fire1");
         }

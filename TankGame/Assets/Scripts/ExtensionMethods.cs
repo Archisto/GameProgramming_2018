@@ -98,14 +98,5 @@ namespace TankGame
 
             return vector;
         }
-
-        public static Vector3 AngleToDirection(this Vector3 vector)
-        {
-            vector.x = vector.x / 360;
-            vector.y = vector.y / 360;
-            vector.z = vector.z / 360;
-
-            return vector;
-        }
     }
 }

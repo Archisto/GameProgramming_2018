@@ -8,55 +8,101 @@ namespace TankGame
     public class Projectile : MonoBehaviour
     {
         [SerializeField]
+        private float damage;
+
+        [SerializeField]
+        private float shootingForce;
+
+        [SerializeField]
+        private float explosionForce;
+
+        [SerializeField]
+        private float explosionRadius;
+
+        [SerializeField]
         private GameObject holePrefab;
 
-        private Vector3 direction;
-        private float speed;
-
-        private float gravity = 1f;
+        private Weapon weapon;
+        private Rigidbody rBody;
 
         private bool holeCreated;
+        private DebugLine line;
 
-        public void Init(Vector3 position, Vector3 direction, float speed)
+        /// <summary>
+        /// Self-initializing property. Gets the reference to
+        /// the Rigidbody component when used the first time.
+        /// </summary>
+        public Rigidbody Rigidbody
         {
-            transform.position = position;
-            this.direction = direction;
-            this.speed = speed;
+            get
+            {
+                if (rBody == null)
+                {
+                    rBody = gameObject.GetOrAddComponent<Rigidbody>();
+                }
+                return rBody;
+            }
         }
 
-        private void Update()
+        public void Init(Weapon weapon)
         {
-            transform.position += direction * speed * Time.deltaTime;
+            this.weapon = weapon;
 
-            direction.y -= gravity * Time.deltaTime;
+            line = FindObjectOfType<DebugLine>();
+        }
 
-            if (!holeCreated && transform.position.y < 0)
+        public void Launch(Vector3 direction)
+        {
+            // TODO: Add particle effects
+
+            Rigidbody.AddForce(direction.normalized * shootingForce, ForceMode.Impulse);
+
+            holeCreated = false;
+        }
+
+        protected void OnCollisionEnter(Collision collision)
+        {
+            // TODO: Add particle effects
+            // TODO: Apply damage to enemies
+
+            Rigidbody.velocity = Vector3.zero;
+            weapon.ProjectileHit(this);
+
+            if (!holeCreated)
             {
-                CreateHole();
+                CreateHole(collision);
                 holeCreated = true;
             }
-
-            if (transform.position.y < -1)
-            {
-                Clear();
-            }
         }
 
-        private void CreateHole()
+        private void CreateHole(Collision collision)
         {
             if (holePrefab != null)
             {
                 GameObject hole = Instantiate(holePrefab);
 
-                Vector3 holePosition = transform.position;
-                holePosition.y = 0.02f;
-                hole.transform.position = holePosition;
-            }
-        }
+                hole.transform.position = transform.position;
 
-        public void Clear()
-        {
-            Destroy(gameObject);
+                Vector3 point = collision.contacts[0].point;
+                //foreach (ContactPoint contact in collision.contacts)
+                //{
+                //    if (Vector3.Distance(transform.position, contact.point) <
+                //        Vector3.Distance(transform.position, point))
+                //    {
+                //        point = contact.point;
+                //    }
+                //}
+
+                if (line != null)
+                {
+                    line.from = transform.position;
+                    line.to = point;
+                }
+
+                // TODO: Fix the hole's rotation
+
+                hole.transform.rotation = Quaternion.LookRotation(Vector3.up, transform.position - point);
+            }
         }
     }
 }
