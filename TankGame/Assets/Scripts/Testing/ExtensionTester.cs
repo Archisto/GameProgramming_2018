@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace TankGame
 {
-    public class ExtensionTest : MonoBehaviour
+    public class ExtensionTester : MonoBehaviour
     {
         [SerializeField]
         private Collider collider;

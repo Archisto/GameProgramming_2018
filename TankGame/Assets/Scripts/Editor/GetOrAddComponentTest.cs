@@ -22,6 +22,8 @@ namespace TankGame.Testing
             GameObject go = new GameObject();
             go.GetOrAddComponent<TestComponent>();
             go.GetOrAddComponent<TestComponent>();
+            go.GetOrAddComponent<TestComponent>();
+            go.GetOrAddComponent<TestComponent>();
             TestComponent[] components = go.GetComponents<TestComponent>();
             Assert.IsTrue(components.Length == 1);
         }

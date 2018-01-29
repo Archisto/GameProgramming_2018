@@ -29,6 +29,29 @@ namespace TankGame
             return component;
         }
 
+        /// <summary>
+        /// Adds an item to the list only if it
+        /// doesn't exist on the list already.
+        /// </summary>
+        /// <typeparam name="T">The type of the item</typeparam>
+        /// <param name="list">The list to which
+        /// the item should be added</param>
+        /// <param name="item">The item to be added to the list</param>
+        /// <returns>True if the item was not on the list before and
+        /// was added to the list successfully, otherwise false</returns>
+        public static bool AddUnique<T>(this IList<T> list, T item)
+        {
+            if (list.Contains(item))
+            {
+                return false;
+            }
+            else
+            {
+                list.Add(item);
+                return true;
+            }
+        }
+
         public static TComponent GetComponentInInactiveParent<TComponent>
             (this GameObject gameObject)
             where TComponent : Component

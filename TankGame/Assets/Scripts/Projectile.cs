@@ -44,10 +44,16 @@ namespace TankGame
             }
         }
 
-        public void Init(Weapon weapon)
-        {
-            this.weapon = weapon;
+        //public void Init(Weapon weapon)
+        //{
+        //    this.weapon = weapon;
+        //    line = FindObjectOfType<DebugLine>();
+        //}
 
+        private Action<Projectile> collisionCallback;
+        public void Init(Action<Projectile> collisionCallback)
+        {
+            this.collisionCallback = collisionCallback;
             line = FindObjectOfType<DebugLine>();
         }
 
@@ -66,7 +72,10 @@ namespace TankGame
             // TODO: Apply damage to enemies
 
             Rigidbody.velocity = Vector3.zero;
-            weapon.ProjectileHit(this);
+
+            // Passes collision information to the weapon
+            //weapon.ProjectileHit(this);
+            collisionCallback(this);
 
             if (!holeCreated)
             {

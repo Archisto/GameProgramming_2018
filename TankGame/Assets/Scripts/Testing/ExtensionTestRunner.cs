@@ -8,7 +8,7 @@ namespace TankGame
     public class ExtensionTestRunner : MonoBehaviour
     {
         [SerializeField]
-        private ExtensionTest test;
+        private ExtensionTester test;
 
         public void Start()
         {

@@ -25,17 +25,33 @@ namespace TankGame
         {
             this.owner = owner;
 
-            // Delta parameter
-            projectiles = new Pool<Projectile>(
-                projectilePrefab, 4, false, item => item.Init(this));
+            projectiles = new Pool<Projectile>(projectilePrefab, 4, false,
+                //item => item.Init(this)); // Lambda parameter - no return value and one parameter (the item)
+            InitProjectile);
+            // Func<bool>);
+
+            /* Lambda parameter:
+            
+            (Arg arg1, Arg arg2) =>
+            {
+                arg1.Method1(Param param1);
+                arg2.Method2(Param param2);
+                Method3();
+            }
+            */
 
             //projectiles = new Pool<Projectile>(
             //    projectilePrefab, 4, false, item => InitItem(item));
         }
 
-        private void InitItem(Projectile projectile)
+        /// <summary>
+        /// Alt lambda parameter method
+        /// </summary>
+        /// <param name="projectile"></param>
+        private void InitProjectile(Projectile projectile)
         {
-            projectile.Init(this);
+            //projectile.Init(this);
+            projectile.Init(ProjectileHit);
         }
 
         protected virtual void Update()
@@ -78,7 +94,6 @@ namespace TankGame
                 // Changes the firing direction vector's distance to 1
                 firingDirection.Normalize();
 
-                projectile.Init(this);
                 projectile.transform.position = shootingPoint.position;
                 projectile.Launch(firingDirection);
 
@@ -92,7 +107,7 @@ namespace TankGame
             return false;
         }
 
-        public void ProjectileHit(Projectile projectile)
+        private void ProjectileHit(Projectile projectile)
         {
             if (!projectiles.ReturnObject(projectile))
             {

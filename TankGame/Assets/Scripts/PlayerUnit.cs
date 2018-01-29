@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace TankGame
 {
-    [RequireComponent(typeof(TransformMover))]
     public class PlayerUnit : Unit
     {
         [SerializeField]

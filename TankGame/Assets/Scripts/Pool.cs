@@ -45,10 +45,7 @@ namespace TankGame
 
             foreach (var item in _pool)
             {
-                if (_initMethod != null)
-                {
-                    _initMethod(item);
-                }
+                _initMethod(item);
             }
         }
 
