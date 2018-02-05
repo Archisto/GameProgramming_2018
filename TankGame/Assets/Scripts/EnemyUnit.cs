@@ -4,13 +4,33 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using TankGame.AI;
+using TankGame.WaypointSystem;
 
 namespace TankGame
 {
     public class EnemyUnit : Unit
     {
+        [SerializeField]
+        private float detectEnemyDistance;
+
+        [SerializeField]
+        private float shootingDistance;
+
+        [SerializeField]
+        private Path path;
+
+        [SerializeField]
+        private float arriveDistance;
+
+        [SerializeField]
+        private Direction direction = Direction.Forward;
+
         private IList<AIStateBase> states = new List<AIStateBase>();
         private AIStateBase CurrentState { get; set; }
+
+        public float DetectEnemyDistance { get { return detectEnemyDistance; } }
+        public float ShootingDistance { get { return shootingDistance; } }
+        public PlayerUnit TargetPlayer { get; set; }
 
         /// <summary>
         /// Initializes the object.
@@ -26,12 +46,22 @@ namespace TankGame
         }
         private void InitStates()
         {
-            // TODO
+            PatrolState patrol = new PatrolState(
+                this, path, direction, arriveDistance);
+            states.Add(patrol);
+
+            CurrentState = patrol;
+            CurrentState.Activate();
+
+            // TODO: Other states
         }
 
+        /// <summary>
+        /// Update is called once per frame.
+        /// </summary>
         protected override void Update()
         {
-            
+            CurrentState.Update();
         }
 
         public bool PerformTransition(AIStateType targetState)

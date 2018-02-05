@@ -15,10 +15,35 @@ namespace TankGame
             this.turnSpeed = turnSpeed;
         }
 
-        public void Move(Vector3 input)
+        public void Move(Vector3 position)
         {
-            Move(input.y);
-            Turn(input.x);
+            Move(moveSpeed);
+            Turn(position);
+        }
+
+        public void MoveTank(Vector3 direction)
+        {
+            // Tank controls
+            Move(direction.y);
+            Turn(direction.x);
+        }
+
+        public void Turn(Vector3 target)
+        {
+            Vector3 direction = target - transform.position;
+            direction.y = transform.position.y;
+            direction = direction.normalized;
+
+            float turnSpeedRad = Mathf.Deg2Rad * turnSpeed * Time.deltaTime;
+            Vector3 rotation = Vector3.RotateTowards(transform.forward, direction, turnSpeedRad, 0);
+            transform.rotation = Quaternion.LookRotation(rotation, transform.up);
+
+            //Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+            //Quaternion limitedRotation =
+            //    Quaternion.Lerp(transform.rotation,
+            //                    targetRotation,
+            //                    (turnSpeed / 10) * Time.deltaTime);
+            //transform.rotation = limitedRotation;
         }
 
         public void Move(float amount)

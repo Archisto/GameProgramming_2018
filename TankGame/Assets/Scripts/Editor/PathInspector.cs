@@ -14,14 +14,14 @@ namespace TankGame.Editor
 
         protected void OnEnable()
         {
-            this.targetPath = target as Path;
+            targetPath = target as Path;
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            if (GUILayout.Button("Add waypoint"))
+            if (GUILayout.Button("Add Waypoint"))
             {
                 int waypointCount = targetPath.transform.childCount;
                 string waypointName =

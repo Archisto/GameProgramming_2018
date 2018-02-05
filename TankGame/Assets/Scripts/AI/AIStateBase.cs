@@ -28,7 +28,7 @@ namespace TankGame.AI
         /// <summary>
         /// The owner Unit of this state (Unit is the state controller class)
         /// </summary>
-        public Unit Owner { get; protected set; }
+        public EnemyUnit Owner { get; protected set; }
 
         /// <summary>
         /// Constructor method.

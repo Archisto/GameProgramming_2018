@@ -28,7 +28,7 @@ namespace TankGame
             input = ReadMovementInput();
             Vector3 cannonInput = ReadCannonInput();
 
-            Mover.Move(input);
+            Mover.MoveTank(input);
 
             ((TransformMover) TankHeadMover).TurnAxis(Vector3.up, cannonInput.x);
             ((TransformMover) BarrelMover).TurnAxis(Vector3.right, -1f * cannonInput.y, -25f, 6.5f);

@@ -122,7 +122,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4391544051765660}
   - component: {fileID: 33538094259538082}
-  - component: {fileID: 136330182025925134}
   - component: {fileID: 23844814126886028}
   m_Layer: 9
   m_Name: RightTreads
@@ -140,7 +139,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4930729947647488}
   - component: {fileID: 33492026722634406}
-  - component: {fileID: 136866805667036050}
   - component: {fileID: 23165525697366492}
   m_Layer: 9
   m_Name: LeftTreads
@@ -227,7 +225,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1849099117854730}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 14.24}
+  m_LocalPosition: {x: -2.58, y: 0, z: 13.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4761245790610022}
@@ -590,32 +588,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 231226c5ae4b14c4b9387e64d36686e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  turnSpeed: 5
+  moveSpeed: 2
+  turnSpeed: 100
   tankHead: {fileID: 1350906531117342}
---- !u!136 &136330182025925134
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1688770134570018}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!136 &136866805667036050
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1847733517167948}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  detectEnemyDistance: 1
+  shootingDistance: 1
+  path: {fileID: 0}
+  arriveDistance: 3

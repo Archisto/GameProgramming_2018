@@ -21,15 +21,18 @@ namespace TankGame.WaypointSystem
         [SerializeField]
         private PathType _pathType;
 
+        [SerializeField]
+        private Color _pathColor = Color.red;
+
         private List<Waypoint> _waypoints;
 
         // Dictionary which defines a color for each path type.
-        private readonly Dictionary<PathType, Color> _pathColors =
-            new Dictionary<PathType, Color>()
-            {
-                { PathType.Loop, Color.green },
-                { PathType.PingPong, Color.red }
-            };
+        //private readonly Dictionary<PathType, Color> _pathColors =
+        //    new Dictionary<PathType, Color>()
+        //    {
+        //        { PathType.Loop, Color.yellow },
+        //        { PathType.PingPong, Color.red }
+        //    };
 
         public List<Waypoint> Waypoints
         {
@@ -149,7 +152,9 @@ namespace TankGame.WaypointSystem
         /// </summary>
         protected void OnDrawGizmos()
         {
-            Gizmos.color = _pathColors[_pathType];
+            Gizmos.color = _pathColor;
+            //Gizmos.color = _pathColors[_pathType];
+
             if (Waypoints.Count > 1)
             {
                 for (int i = 1; i < Waypoints.Count; i++)

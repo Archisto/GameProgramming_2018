@@ -16,11 +16,9 @@ namespace TankGame
         [SerializeField]
         private GameObject tankHead;
 
-        private IMover mover;
+        private TransformMover mover;
         private IMover headMover;
         private IMover barrelMover;
-
-        private BarrelTip barrelTip;
 
         private void Awake()
         {
@@ -45,13 +43,11 @@ namespace TankGame
 
             headMover.Init(0f, turnSpeed);
             barrelMover.Init(0f, turnSpeed);
-
-            barrelTip = GetComponentInChildren<BarrelTip>();
         }
 
         public Weapon Weapon { get; protected set; }
 
-        protected IMover Mover
+        public TransformMover Mover
         {
             get
             {
@@ -86,7 +82,7 @@ namespace TankGame
             //// Changes the firing direction vector's distance to 1
             //firingDirection.Normalize();
 
-            //// Creates a nwe projectile
+            //// Creates a new projectile
             //Projectile newProjectile = Instantiate(projectilePrefab);
             //newProjectile.Init(barrelTip.transform.position, firingDirection, 20);
         }

@@ -14,7 +14,10 @@ namespace TankGame
         /// <summary>
         /// Moves the mover.
         /// </summary>
-        /// <param name="input">input from the user</param>
-        void Move(Vector3 input);
+        /// <param name="direction">input from the user</param>
+        void Move(float amount);
+        void Turn(float amount);
+        void Move(Vector3 direction);
+        void Turn(Vector3 target);
     }
 }
