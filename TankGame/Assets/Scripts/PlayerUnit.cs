@@ -25,6 +25,8 @@ namespace TankGame
 
         protected override void Update()
         {
+            base.Update();
+
             input = ReadMovementInput();
             Vector3 cannonInput = ReadCannonInput();
 
@@ -84,7 +86,14 @@ namespace TankGame
             rightTreads.y = 0.5f;
         }
 
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
+        {
+            base.OnDrawGizmos();
+
+            DrawTreadSpeeds();
+        }
+
+        private void DrawTreadSpeeds()
         {
             //if (input != Vector3.zero)
             {

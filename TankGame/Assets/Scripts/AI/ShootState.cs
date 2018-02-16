@@ -33,6 +33,13 @@ namespace TankGame.AI
 
         protected override bool ChangeState()
         {
+            // Did the player die?
+            // If yes, go to patrol state
+            if (Owner.Target.Health.IsDead)
+            {
+                return Owner.PerformTransition(AIStateType.Patrol);
+            }
+
             // Did the player get outside of the shooting range?
             // If yes, go to follow target state
 

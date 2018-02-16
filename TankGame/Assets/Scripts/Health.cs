@@ -37,15 +37,32 @@ namespace TankGame
         /// <returns>does the Unit die</returns>
         public bool TakeDamage(int damage)
         {
+            // The Unit is already dead
+            if (IsDead)
+            {
+                return false;
+            }
+
             CurrentHealth = Mathf.Clamp(CurrentHealth - damage, 0, CurrentHealth);
 
-            bool outOfHealth = (CurrentHealth == 0);
-            if (outOfHealth && UnitDied != null)
+            if (IsDead && UnitDied != null)
             {
                 UnitDied(Owner);
             }
 
-            return outOfHealth;
+            return IsDead;
+        }
+
+        /// <summary>
+        /// Returns whether or not the Unit is dead.
+        /// </summary>
+        /// <returns>is the Unit dead</returns>
+        public bool IsDead
+        {
+            get
+            {
+                return (CurrentHealth == 0);
+            }
         }
     }
 }

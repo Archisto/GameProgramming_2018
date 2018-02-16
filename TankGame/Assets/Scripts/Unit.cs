@@ -15,6 +15,9 @@ namespace TankGame
         private float turnSpeed = 5f;
 
         [SerializeField]
+        private float respawnTime = 5f;
+
+        [SerializeField]
         private GameObject tankHead;
 
         [SerializeField]
@@ -23,6 +26,8 @@ namespace TankGame
         private TransformMover mover;
         private IMover headMover;
         private IMover barrelMover;
+
+        private float timeOfDeath = 0;
 
         private void Awake()
         {
@@ -40,7 +45,25 @@ namespace TankGame
         /// An abstract method has to be defined
         /// in a non-abstract child class.
         /// </summary>
-        protected abstract void Update();
+        //protected abstract void Update();
+
+        protected virtual void Update()
+        {
+            if (Health != null)
+            {
+                if (Health.IsDead)
+                {
+                    if (timeOfDeath == 0)
+                    {
+                        timeOfDeath = Time.time;
+                    }
+                    else if (Time.time - timeOfDeath >= respawnTime)
+                    {
+                        Respawn();
+                    }
+                }
+            }
+        }
 
         public virtual void Init()
         {
@@ -112,10 +135,10 @@ namespace TankGame
             //newProjectile.Init(barrelTip.transform.position, firingDirection, 20);
         }
 
-        public virtual void Clear()
-        {
+        //public virtual void Clear()
+        //{
 
-        }
+        //}
 
         public void TakeDamage(int amount)
         {
@@ -124,7 +147,29 @@ namespace TankGame
 
         protected virtual void HandleUnitDied(Unit unit)
         {
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
+            Debug.Log(name + " died");
+        }
+
+        protected virtual void Respawn()
+        {
+            Health.RestoreToFull();
+            timeOfDeath = 0;
+            Debug.Log(name + " respawned");
+        }
+
+        protected virtual void OnDrawGizmos()
+        {
+            if (Health != null && Health.IsDead)
+            {
+                DrawDeathSphere(); 
+            }
+        }
+
+        private void DrawDeathSphere()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, 1.5f);
         }
     }
 }

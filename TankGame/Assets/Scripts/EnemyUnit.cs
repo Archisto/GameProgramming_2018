@@ -76,6 +76,8 @@ namespace TankGame
         /// </summary>
         protected override void Update()
         {
+            base.Update();
+
             CurrentState.Update();
         }
 
@@ -96,7 +98,7 @@ namespace TankGame
                 CurrentState = state;
                 CurrentState.Activate();
                 result = true;
-                Debug.Log("Changed state to " + state);
+                //Debug.Log("Changed state to " + state);
             }
 
             return result;
@@ -120,21 +122,26 @@ namespace TankGame
             //return null;
         }
 
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
         {
-            DrawDetectEnemyDistance();
-            DrawShootingDistance();
+            base.OnDrawGizmos();
+
+            if (Health == null || !Health.IsDead)
+            {
+                DrawDetectEnemyDistance();
+                DrawShootingDistance(); 
+            }
         }
 
         private void DrawDetectEnemyDistance()
         {
-            Gizmos.color = Color.black;
+            Gizmos.color = Color.grey;
             Gizmos.DrawWireSphere(transform.position, detectEnemyDistance);
         }
 
         private void DrawShootingDistance()
         {
-            Gizmos.color = Color.red;
+            Gizmos.color = Color.black;
             Gizmos.DrawWireSphere(transform.position, shootingDistance);
         }
     }

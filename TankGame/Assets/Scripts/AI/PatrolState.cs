@@ -49,6 +49,9 @@ namespace TankGame.AI
 
         protected override bool ChangeState()
         {
+            // Is there a live player Unit at detection distance?
+            // If yes, set it as the target and go to follow state
+
             int mask = LayerMask.GetMask("Player");
             Collider[] players = Physics.OverlapSphere(Owner.transform.position,
                 Owner.DetectEnemyDistance, mask);
@@ -57,7 +60,7 @@ namespace TankGame.AI
             {
                 PlayerUnit player = players[0].gameObject.GetComponentInHierarchy<PlayerUnit>();
 
-                if (player != null)
+                if (player != null && !player.Health.IsDead)
                 {
                     Owner.Target = player;
 
