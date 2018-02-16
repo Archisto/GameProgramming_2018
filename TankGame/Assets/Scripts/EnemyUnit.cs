@@ -30,7 +30,20 @@ namespace TankGame
 
         public float DetectEnemyDistance { get { return detectEnemyDistance; } }
         public float ShootingDistance { get { return shootingDistance; } }
-        public PlayerUnit TargetPlayer { get; set; }
+        public PlayerUnit Target { get; set; }
+
+        public Vector3? ToTargetVector
+        {
+            get
+            {
+                if (Target != null)
+                {
+                    return Target.transform.position - transform.position;
+                }
+
+                return null;
+            }
+        }
 
         /// <summary>
         /// Initializes the object.
@@ -48,12 +61,14 @@ namespace TankGame
         {
             PatrolState patrol = new PatrolState(
                 this, path, direction, arriveDistance);
+            FollowTargetState followTarget = new FollowTargetState(this);
+            ShootState shoot = new ShootState(this);
             states.Add(patrol);
+            states.Add(followTarget);
+            states.Add(shoot);
 
             CurrentState = patrol;
             CurrentState.Activate();
-
-            // TODO: Other states
         }
 
         /// <summary>
@@ -68,6 +83,7 @@ namespace TankGame
         {
             if ( !CurrentState.CheckTransition(targetState) )
             {
+                Debug.Log("State change failed");
                 return false;
             }
 
@@ -80,6 +96,7 @@ namespace TankGame
                 CurrentState = state;
                 CurrentState.Activate();
                 result = true;
+                Debug.Log("Changed state to " + state);
             }
 
             return result;
@@ -101,6 +118,24 @@ namespace TankGame
             //}
 
             //return null;
+        }
+
+        private void OnDrawGizmos()
+        {
+            DrawDetectEnemyDistance();
+            DrawShootingDistance();
+        }
+
+        private void DrawDetectEnemyDistance()
+        {
+            Gizmos.color = Color.black;
+            Gizmos.DrawWireSphere(transform.position, detectEnemyDistance);
+        }
+
+        private void DrawShootingDistance()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, shootingDistance);
         }
     }
 }

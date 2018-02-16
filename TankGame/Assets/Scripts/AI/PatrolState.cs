@@ -17,10 +17,8 @@ namespace TankGame.AI
 
         public PatrolState(EnemyUnit owner, Path path, Direction direction,
                            float arriveDistance)
-            : base()
+            : base(owner, AIStateType.Patrol)
         {
-            State = AIStateType.Patrol;
-            Owner = owner;
             _path = path;
             _direction = direction;
             _arriveDistance = arriveDistance;
@@ -46,12 +44,10 @@ namespace TankGame.AI
                 // Rotate -||-
                 CurrentWaypoint = GetWaypoint();
                 Owner.Mover.Move(CurrentWaypoint.Position);
-
-                Debug.Log("Moving");
             }
         }
 
-        private bool ChangeState()
+        protected override bool ChangeState()
         {
             int mask = LayerMask.GetMask("Player");
             Collider[] players = Physics.OverlapSphere(Owner.transform.position,
@@ -59,13 +55,23 @@ namespace TankGame.AI
 
             if (players.Length > 0)
             {
-                PlayerUnit player = players[0].gameObject.GetComponent<PlayerUnit>();
-                Owner.TargetPlayer = player;
-                Owner.PerformTransition(AIStateType.FollowTarget);
+                PlayerUnit player = players[0].gameObject.GetComponentInHierarchy<PlayerUnit>();
 
-                Debug.Log("Changed state");
+                if (player != null)
+                {
+                    Owner.Target = player;
 
-                return true;
+                    float sqrDistanceToPlayer = Owner.ToTargetVector.Value.sqrMagnitude;
+
+                    if (sqrDistanceToPlayer < SqrDetectEnemyDistance)
+                    {
+                        return Owner.PerformTransition(AIStateType.FollowTarget);
+                    }
+                    else
+                    {
+                        Owner.Target = null;
+                    }
+                }
             }
 
             return false;

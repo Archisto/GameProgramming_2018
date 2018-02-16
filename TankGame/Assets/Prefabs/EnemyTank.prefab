@@ -531,7 +531,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 114997426961152536, guid: f867d94f2f5270c4dafb3a73e3cde915,
     type: 2}
-  firingRate: 0.33333334
+  firingRate: 0.8
   shootingPoint: {fileID: 4196623119579154}
 --- !u!114 &114477658561079370
 MonoBehaviour:
@@ -591,7 +591,9 @@ MonoBehaviour:
   moveSpeed: 2
   turnSpeed: 100
   tankHead: {fileID: 1350906531117342}
-  detectEnemyDistance: 1
-  shootingDistance: 1
+  startingHealth: 50
+  detectEnemyDistance: 10
+  shootingDistance: 7
   path: {fileID: 0}
   arriveDistance: 3
+  direction: 0

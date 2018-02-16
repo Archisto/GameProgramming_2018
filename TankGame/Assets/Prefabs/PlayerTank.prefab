@@ -580,6 +580,7 @@ MonoBehaviour:
   moveSpeed: 3
   turnSpeed: 40
   tankHead: {fileID: 1497659938771260}
+  startingHealth: 100
   horizontalAxis: Horizontal
   verticalAxis: Vertical
   cannonHorizontalAxis: Cannon Horizontal

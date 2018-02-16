@@ -111,10 +111,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8715cc452847ddf47bc0ca81f9d9aa1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 5
+  damage: 20
   shootingForce: 20
   explosionForce: 1
   explosionRadius: 1
+  hitMask: 4864
   holePrefab: {fileID: 1709169189250334, guid: b4101591b05d991408d4848ff166c6f3, type: 2}
 --- !u!135 &135199227234557582
 SphereCollider:

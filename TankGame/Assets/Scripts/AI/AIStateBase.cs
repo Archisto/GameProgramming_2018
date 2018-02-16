@@ -30,12 +30,30 @@ namespace TankGame.AI
         /// </summary>
         public EnemyUnit Owner { get; protected set; }
 
+        public float SqrDetectEnemyDistance
+        {
+            get
+            {
+                return Owner.DetectEnemyDistance * Owner.DetectEnemyDistance;
+            }
+        }
+
+        public float SqrShootingDistance
+        {
+            get
+            {
+                return Owner.ShootingDistance * Owner.ShootingDistance;
+            }
+        }
+
         /// <summary>
         /// Constructor method.
         /// </summary>
-        public AIStateBase()
+        public AIStateBase(EnemyUnit owner, AIStateType stateType)
         {
             TargetStates = new List<AIStateType>();
+            Owner = owner;
+            State = stateType;
         }
 
         public abstract void Update();
@@ -85,5 +103,7 @@ namespace TankGame.AI
         {
 
         }
+
+        protected abstract bool ChangeState();
     }
 }

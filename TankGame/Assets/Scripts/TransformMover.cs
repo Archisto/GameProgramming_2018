@@ -18,7 +18,7 @@ namespace TankGame
         public void Move(Vector3 position)
         {
             Move(moveSpeed);
-            Turn(position);
+            Turn(position, true);
         }
 
         public void MoveTank(Vector3 direction)
@@ -28,10 +28,15 @@ namespace TankGame
             Turn(direction.x);
         }
 
-        public void Turn(Vector3 target)
+        public void Turn(Vector3 target, bool keepSameY)
         {
             Vector3 direction = target - transform.position;
-            direction.y = transform.position.y;
+
+            if (keepSameY)
+            {
+                direction.y = transform.position.y;
+            }
+
             direction = direction.normalized;
 
             float turnSpeedRad = Mathf.Deg2Rad * turnSpeed * Time.deltaTime;

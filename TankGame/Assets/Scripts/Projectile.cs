@@ -8,7 +8,7 @@ namespace TankGame
     public class Projectile : MonoBehaviour
     {
         [SerializeField]
-        private float damage;
+        private int damage;
 
         [SerializeField]
         private float shootingForce;
@@ -18,6 +18,9 @@ namespace TankGame
 
         [SerializeField]
         private float explosionRadius;
+
+        [SerializeField, HideInInspector]
+        private int hitMask;
 
         [SerializeField]
         private GameObject holePrefab;
@@ -69,7 +72,8 @@ namespace TankGame
         protected void OnCollisionEnter(Collision collision)
         {
             // TODO: Add particle effects
-            // TODO: Apply damage to enemies
+
+            ApplyDamage();
 
             Rigidbody.velocity = Vector3.zero;
 
@@ -81,6 +85,27 @@ namespace TankGame
             {
                 CreateHole(collision);
                 holeCreated = true;
+            }
+        }
+
+        private void ApplyDamage()
+        {
+            List<IDamageReceiver> alreadyDamaged = new List<IDamageReceiver>();
+
+            Collider[] damageReceivers = Physics.OverlapSphere(
+                transform.position, explosionRadius, hitMask);
+
+            for (int i = 0; i < damageReceivers.Length; i++)
+            {
+                IDamageReceiver damageReceiver =
+                    damageReceivers[i].GetComponentInParent<IDamageReceiver>();
+                if (damageReceiver != null &&
+                    !alreadyDamaged.Contains(damageReceiver))
+                {
+                    damageReceiver.TakeDamage(damage);
+                    alreadyDamaged.Add(damageReceiver);
+                    // TODO: Apply explosion force
+                }
             }
         }
 
@@ -110,7 +135,8 @@ namespace TankGame
 
                 // TODO: Fix the hole's rotation
 
-                hole.transform.rotation = Quaternion.LookRotation(Vector3.up, transform.position - point);
+                hole.transform.rotation = Quaternion.LookRotation(Vector3.forward, transform.position - point);
+                //hole.transform.rotation = Quaternion.LookRotation(Vector3.up, transform.position - point);
             }
         }
     }

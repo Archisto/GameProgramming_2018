@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace TankGame
 {
     [RequireComponent(typeof(IMover))]
-    public abstract class Unit : MonoBehaviour
+    public abstract class Unit : MonoBehaviour, IDamageReceiver
     {
         [SerializeField]
         private float moveSpeed = 5f;
@@ -16,6 +17,9 @@ namespace TankGame
         [SerializeField]
         private GameObject tankHead;
 
+        [SerializeField]
+        private int startingHealth;
+
         private TransformMover mover;
         private IMover headMover;
         private IMover barrelMover;
@@ -24,6 +28,19 @@ namespace TankGame
         {
             Init();
         }
+
+        private void OnDestroy()
+        {
+            // Stops listening to the UnitDied event
+            Health.UnitDied -= HandleUnitDied;
+        }
+
+        /// <summary>
+        /// Update is called once per frame.
+        /// An abstract method has to be defined
+        /// in a non-abstract child class.
+        /// </summary>
+        protected abstract void Update();
 
         public virtual void Init()
         {
@@ -43,6 +60,12 @@ namespace TankGame
 
             headMover.Init(0f, turnSpeed);
             barrelMover.Init(0f, turnSpeed);
+
+            Health = new Health(this, startingHealth);
+
+            // Registering to listen to the UnitDied event.
+            // The method must return void and have one parameter.
+            Health.UnitDied += HandleUnitDied;
         }
 
         public Weapon Weapon { get; protected set; }
@@ -71,6 +94,8 @@ namespace TankGame
             }
         }
 
+        public Health Health { get; protected set; }
+
         public virtual void Fire()
         {
             Weapon.Fire();
@@ -92,11 +117,14 @@ namespace TankGame
 
         }
 
-        /// <summary>
-        /// Update is called once per frame.
-        /// An abstract method has to be defined
-        /// in a non-abstract child class.
-        /// </summary>
-        protected abstract void Update();
+        public void TakeDamage(int amount)
+        {
+            Health.TakeDamage(amount);
+        }
+
+        protected virtual void HandleUnitDied(Unit unit)
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
