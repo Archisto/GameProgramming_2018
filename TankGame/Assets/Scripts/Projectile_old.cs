@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace TankGame
 {
-    public class Projectile1 : MonoBehaviour
+    public class Projectile_old : MonoBehaviour
     {
         [SerializeField]
         private GameObject holePrefab;

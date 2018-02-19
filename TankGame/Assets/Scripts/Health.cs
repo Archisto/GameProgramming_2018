@@ -25,6 +25,18 @@ namespace TankGame
             RestoreToFull();
         }
 
+        /// <summary>
+        /// Returns whether or not the Unit is dead.
+        /// </summary>
+        /// <returns>is the Unit dead</returns>
+        public bool IsDead
+        {
+            get
+            {
+                return (CurrentHealth == 0);
+            }
+        }
+
         public void RestoreToFull()
         {
             CurrentHealth = maxHealth;
@@ -45,23 +57,24 @@ namespace TankGame
 
             CurrentHealth = Mathf.Clamp(CurrentHealth - damage, 0, CurrentHealth);
 
-            if (IsDead && UnitDied != null)
+            if (IsDead)
             {
-                UnitDied(Owner);
+                RaiseUnitDiedEvent();
             }
 
             return IsDead;
         }
 
-        /// <summary>
-        /// Returns whether or not the Unit is dead.
-        /// </summary>
-        /// <returns>is the Unit dead</returns>
-        public bool IsDead
+        protected void RaiseUnitDiedEvent()
         {
-            get
+            // An event can't be fired from any other class than
+            // the one in which it is declared. Instead call
+            // a method (like this) which raises the event.
+
+            //UnitDied?.Invoke(Owner);
+            if (UnitDied != null)
             {
-                return (CurrentHealth == 0);
+                UnitDied(Owner);
             }
         }
     }

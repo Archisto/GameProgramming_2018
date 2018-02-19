@@ -7,23 +7,39 @@ namespace TankGame
 {
     public class Projectile : MonoBehaviour
     {
+        /* SerializeField, Header, ToolTip, Range, HideInInspector, Flags, ExecuteInEditMode */
+
         [SerializeField]
         private int damage;
 
         [SerializeField]
         private float shootingForce;
 
-        [SerializeField]
+        [SerializeField, Header("Explosion values")]
         private float explosionForce;
 
         [SerializeField]
         private float explosionRadius;
 
+        [SerializeField, Header("Miscellaneous"),
+            Tooltip("A gameObject that appears at" +
+            "the collision point for a limited time")]
+        private GameObject holePrefab;
+
         [SerializeField, HideInInspector]
         private int hitMask;
 
-        [SerializeField]
-        private GameObject holePrefab;
+        //[SerializeField]
+        //private ProjectileType type;
+
+        //[Flags]
+        //public enum ProjectileType
+        //{
+        //    None = 0,
+        //    Player = 1,
+        //    Enemy = 1 << 1,
+        //    Neutral = 1 << 2
+        //}
 
         private Weapon weapon;
         private Rigidbody rBody;
@@ -53,10 +69,10 @@ namespace TankGame
         //    line = FindObjectOfType<DebugLine>();
         //}
 
-        private Action<Projectile> collisionCallback;
+        private Action<Projectile> PassCollisionInfoToWeapon;
         public void Init(Action<Projectile> collisionCallback)
         {
-            this.collisionCallback = collisionCallback;
+            PassCollisionInfoToWeapon = collisionCallback;
             line = FindObjectOfType<DebugLine>();
         }
 
@@ -79,7 +95,7 @@ namespace TankGame
 
             // Passes collision information to the weapon
             //weapon.ProjectileHit(this);
-            collisionCallback(this);
+            PassCollisionInfoToWeapon(this);
 
             if (!holeCreated)
             {
@@ -137,6 +153,8 @@ namespace TankGame
 
                 hole.transform.rotation = Quaternion.LookRotation(Vector3.forward, transform.position - point);
                 //hole.transform.rotation = Quaternion.LookRotation(Vector3.up, transform.position - point);
+
+                hole.SetActive(false);
             }
         }
     }

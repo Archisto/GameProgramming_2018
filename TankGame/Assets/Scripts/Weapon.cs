@@ -111,7 +111,8 @@ namespace TankGame
         {
             if (!projectiles.ReturnObject(projectile))
             {
-                Debug.LogError("Could not return the projectile back to the pool.");
+                Debug.LogError("Could not return " +
+                    "the projectile back to the pool.");
             }
         }
     }

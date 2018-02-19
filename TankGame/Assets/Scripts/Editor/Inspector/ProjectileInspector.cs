@@ -21,7 +21,8 @@ namespace TankGame.Editor
         {
             base.OnInspectorGUI();
 
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical(); // BEGIN ---------------
+            //EditorGUILayout.BeginHorizontal();
 
             //GUILayout.Label("Label");
             //EditorGUILayout.LabelField("Label");
@@ -45,7 +46,8 @@ namespace TankGame.Editor
 
             serializedObject.ApplyModifiedProperties();
 
-            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndVertical();  // END ---------------
+            //EditorGUILayout.EndHorizontal();
         }
     }
 }
