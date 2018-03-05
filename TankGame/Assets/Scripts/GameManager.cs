@@ -45,7 +45,7 @@ namespace TankGame
         {
             get
             {
-                return Path.Combine(Application.persistentDataPath, "save");
+                return Path.Combine(Application.persistentDataPath, "save1");
             }
         }
 
@@ -81,7 +81,7 @@ namespace TankGame
 
         private void Init()
         {
-            saveSystem = new SaveSystem(new BinaryPersistence(SavePath));
+            saveSystem = new SaveSystem(new JSONPersistence(SavePath));
 
             FindUnits();
         }

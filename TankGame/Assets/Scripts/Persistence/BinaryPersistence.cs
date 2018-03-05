@@ -24,6 +24,11 @@ namespace TankGame.Persistence
             FilePath = path + Extension;
         }
 
+        /// <summary>
+        /// Saves data.
+        /// </summary>
+        /// <typeparam name="T">Data type</typeparam>
+        /// <param name="data">Data to save</param>
         public void Save<T>(T data)
         {
             using (FileStream stream = File.OpenWrite(FilePath))
@@ -39,6 +44,11 @@ namespace TankGame.Persistence
             }
         }
 
+        /// <summary>
+        /// Loads data.
+        /// </summary>
+        /// <typeparam name="T">Data type</typeparam>
+        /// <returns>loaded data of the given type</returns>
         public T Load<T>()
         {
             T data = default(T);
