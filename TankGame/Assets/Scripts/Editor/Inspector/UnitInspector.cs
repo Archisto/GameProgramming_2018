@@ -19,5 +19,12 @@ namespace TankGame.Editor
                 targetUnit.RequestID();
             }
         }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            GUILayout.Label("ID: " + targetUnit.ID);
+        }
     }
 }

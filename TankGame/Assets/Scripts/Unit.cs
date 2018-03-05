@@ -44,7 +44,7 @@ namespace TankGame
         [SerializeField]
         private int startingHealth;
 
-        [SerializeField]//, HideInInspector]
+        [SerializeField, HideInInspector]
         private int id = -1;
 
         private TransformMover mover;
