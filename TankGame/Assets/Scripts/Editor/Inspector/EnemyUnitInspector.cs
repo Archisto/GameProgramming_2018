@@ -1,20 +1,18 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using UnityEngine.TestTools;
-using NUnit.Framework;
-using System.Collections;
-using TankGame.WaypointSystem;
 
 namespace TankGame.Editor
 {
     [UnityEditor.CustomEditor(typeof(EnemyUnit))]
-    public class EnemyUnitInspector : UnityEditor.Editor
+    public class EnemyUnitInspector : UnitInspector
     {
         private EnemyUnit targetEnemyUnit;
         private int damageAmount = 10;
 
-        protected void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+
             targetEnemyUnit = target as EnemyUnit;
         }
 
@@ -23,10 +21,11 @@ namespace TankGame.Editor
             base.OnInspectorGUI();
 
             //GUILayout.Space(5);
-            //GUILayout.Label("Debug", EditorStyles.boldLabel);
-            //GUILayout.Label("Debug", EditorStyles.popup);
             GUILayout.Label("Debug", EditorStyles.largeLabel);
+            //GUILayout.Label("Debug", EditorStyles.boldLabel);
             //GUILayout.Label("Debug", EditorStyles.miniLabel);
+            //GUILayout.Label("Debug", EditorStyles.radioButton);
+            //GUILayout.Label("Debug", EditorStyles.popup); etc.
 
             damageAmount =
                 EditorGUILayout.IntField("Damage Amount", damageAmount);

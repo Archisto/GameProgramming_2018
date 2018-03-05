@@ -28,5 +28,25 @@ namespace TankGame.Persistence
             : this(vector.x, vector.y, 0)
         {
         }
+
+        public static implicit operator SerializableVector3(Vector3 v)
+        {
+            return new SerializableVector3(v);
+        }
+
+        public static implicit operator SerializableVector3(Vector2 v)
+        {
+            return new SerializableVector3(v);
+        }
+
+        public static implicit operator Vector3(SerializableVector3 v)
+        {
+            return new Vector3(v.X, v.Y, v.Z);
+        }
+
+        public static explicit operator Vector2(SerializableVector3 v)
+        {
+            return new Vector2(v.X, v.Y);
+        }
     }
 }

@@ -2,12 +2,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TankGame.Persistence;
 
 namespace TankGame
 {
     [RequireComponent(typeof(IMover))]
     public abstract class Unit : MonoBehaviour, IDamageReceiver
     {
+        #region Statics
+
+        private static int idCounter = 0;
+
+        public static int GetNextID()
+        {
+            var allUnits = FindObjectsOfType<Unit>();
+            foreach (var unit in allUnits)
+            {
+                if (unit.ID >= idCounter)
+                {
+                    idCounter = unit.ID + 1;
+                }
+            }
+
+            return idCounter;
+        }
+
+        #endregion Statics
+
         [SerializeField]
         private float moveSpeed = 5f;
 
@@ -22,6 +43,9 @@ namespace TankGame
 
         [SerializeField]
         private int startingHealth;
+
+        [SerializeField]//, HideInInspector]
+        private int id = -1;
 
         private TransformMover mover;
         private IMover headMover;
@@ -65,32 +89,6 @@ namespace TankGame
             }
         }
 
-        public virtual void Init()
-        {
-            Weapon = GetComponentInChildren<Weapon>();
-            if (Weapon != null)
-            {
-                Weapon.Init(this);
-            }
-
-            mover = gameObject.GetOrAddComponent<TransformMover>();
-            mover.Init(moveSpeed, turnSpeed);
-
-            TransformMover[] headMovers =
-                tankHead.GetComponentsInChildren<TransformMover>();
-            headMover = headMovers[0];
-            barrelMover = headMovers[1];
-
-            headMover.Init(0f, turnSpeed);
-            barrelMover.Init(0f, turnSpeed);
-
-            Health = new Health(this, startingHealth);
-
-            // Registering to listen to the UnitDied event.
-            // The method must return void and have one parameter.
-            Health.UnitDied += HandleUnitDied;
-        }
-
         public Weapon Weapon { get; protected set; }
 
         public TransformMover Mover
@@ -118,6 +116,38 @@ namespace TankGame
         }
 
         public Health Health { get; protected set; }
+
+        public int ID
+        {
+            get { return id; }
+            private set { id = value; }
+        }
+
+        public virtual void Init()
+        {
+            Weapon = GetComponentInChildren<Weapon>();
+            if (Weapon != null)
+            {
+                Weapon.Init(this);
+            }
+
+            mover = gameObject.GetOrAddComponent<TransformMover>();
+            mover.Init(moveSpeed, turnSpeed);
+
+            TransformMover[] headMovers =
+                tankHead.GetComponentsInChildren<TransformMover>();
+            headMover = headMovers[0];
+            barrelMover = headMovers[1];
+
+            headMover.Init(0f, turnSpeed);
+            barrelMover.Init(0f, turnSpeed);
+
+            Health = new Health(this, startingHealth);
+
+            // Registering to listen to the UnitDied event.
+            // The method must return void and have one parameter.
+            Health.UnitDied += HandleUnitDied;
+        }
 
         public virtual void Fire()
         {
@@ -156,6 +186,36 @@ namespace TankGame
             Health.RestoreToFull();
             timeOfDeath = 0;
             Debug.Log(name + " respawned");
+        }
+
+        public void RequestID()
+        {
+            if (ID < 0)
+            {
+                ID = GetNextID();
+            }
+        }
+
+        public UnitData GetUnitData()
+        {
+            return new UnitData
+            {
+                Health = Health.CurrentHealth,
+                Position = transform.position,
+                YRotation = transform.rotation.y,
+                ID = ID
+            };
+        }
+
+        public void SetUnitData(UnitData data)
+        {
+            Health.SetHealth(data.Health);
+            transform.position = data.Position;
+            Quaternion newRotation = new Quaternion
+                (transform.rotation.x, data.YRotation,
+                transform.rotation.z, transform.rotation.w);
+            transform.rotation = newRotation;
+            ID = data.ID;
         }
 
         protected virtual void OnDrawGizmos()

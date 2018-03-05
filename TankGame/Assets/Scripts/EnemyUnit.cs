@@ -78,7 +78,10 @@ namespace TankGame
         {
             base.Update();
 
-            CurrentState.Update();
+            if (Health == null || !Health.IsDead)
+            {
+                CurrentState.Update();
+            }
         }
 
         public bool PerformTransition(AIStateType targetState)

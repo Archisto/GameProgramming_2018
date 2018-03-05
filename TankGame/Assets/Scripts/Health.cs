@@ -49,20 +49,35 @@ namespace TankGame
         /// <returns>does the Unit die</returns>
         public bool TakeDamage(int damage)
         {
-            // The Unit is already dead
-            if (IsDead)
+            if (!IsDead)
             {
-                return false;
+                // Deals damage
+                CurrentHealth =
+                    Mathf.Clamp(CurrentHealth - damage, 0, CurrentHealth);
+
+                // If the Unit died, an event is triggered
+                if (IsDead)
+                {
+                    RaiseUnitDiedEvent();
+                    return true;
+                }
             }
 
-            CurrentHealth = Mathf.Clamp(CurrentHealth - damage, 0, CurrentHealth);
+            return false;
+        }
 
-            if (IsDead)
+        public void SetHealth(int health)
+        {
+            bool wasDead = IsDead;
+
+            CurrentHealth = Mathf.Clamp(health, 0, maxHealth);
+
+            // If the unit's health was set to 0,
+            // an event is triggered
+            if (!wasDead && IsDead)
             {
                 RaiseUnitDiedEvent();
             }
-
-            return IsDead;
         }
 
         protected void RaiseUnitDiedEvent()
