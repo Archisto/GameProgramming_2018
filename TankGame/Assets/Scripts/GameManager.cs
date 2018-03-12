@@ -36,6 +36,9 @@ namespace TankGame
 
         #endregion
 
+        [SerializeField]
+        private bool enemyWeaponsDisabled;
+
         private List<Unit> enemyUnits = new List<Unit>();
         private Unit playerUnit;
 
@@ -83,6 +86,10 @@ namespace TankGame
         {
             saveSystem = new SaveSystem(new JSONPersistence(SavePath));
 
+            // Initializes the UI
+            var UI = FindObjectOfType<UI.UI>();
+            UI.Init();
+
             FindUnits();
         }
 
@@ -97,6 +104,8 @@ namespace TankGame
 
         private void AddUnit(Unit unit)
         {
+            unit.Init();
+
             if (unit is EnemyUnit)
             {
                 enemyUnits.Add(unit);
@@ -109,6 +118,9 @@ namespace TankGame
             {
                 playerUnit = unit;
             }
+
+            // Add the unit's health to the UI
+            UI.UI.Current.HealthUI.AddUnit(unit);
         }
 
         /// <summary>
@@ -148,6 +160,14 @@ namespace TankGame
             Debug.Log("Game loaded");
 
             return data;
+        }
+
+        public bool EnemyWeaponsDisabled
+        {
+            get
+            {
+                return enemyWeaponsDisabled;
+            }
         }
     }
 }

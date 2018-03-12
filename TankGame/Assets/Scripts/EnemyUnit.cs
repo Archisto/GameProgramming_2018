@@ -84,6 +84,14 @@ namespace TankGame
             }
         }
 
+        public override void Fire()
+        {
+            if ( !GameManager.Instance.EnemyWeaponsDisabled )
+            {
+                base.Fire();
+            }
+        }
+
         public bool PerformTransition(AIStateType targetState)
         {
             if ( !CurrentState.CheckTransition(targetState) )

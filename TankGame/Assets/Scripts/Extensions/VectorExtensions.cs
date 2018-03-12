@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TankGame
+namespace TankGame.Extensions
 {
-    public class BarrelTip : MonoBehaviour
+    public class VectorExtensions : MonoBehaviour
     {
         
     }

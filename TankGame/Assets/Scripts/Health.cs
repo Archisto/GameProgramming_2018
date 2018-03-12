@@ -12,9 +12,32 @@ namespace TankGame
         /// </summary>
         public event Action<Unit> UnitDied;
 
-        private int maxHealth;
+        /// <summary>
+        /// An event which is triggered when the health changes
+        /// </summary>
+        public event Action<Unit, int> HealthChanged;
 
-        public int CurrentHealth { get; private set; }
+        private int maxHealth;
+        private int currentHealth;
+
+        public int CurrentHealth
+        {
+            get
+            {
+                return currentHealth;
+            }
+            protected set
+            {
+                currentHealth = value;
+
+                // HealthChanged event is raised every time
+                // the CurrentHealth property is changed
+                if (HealthChanged != null)
+                {
+                    HealthChanged(Owner, currentHealth);
+                }
+            }
+        }
 
         public Unit Owner { get; private set; }
 

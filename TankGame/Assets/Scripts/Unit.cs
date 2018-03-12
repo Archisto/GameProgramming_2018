@@ -53,15 +53,36 @@ namespace TankGame
 
         private float timeOfDeath = 0;
 
-        private void Awake()
-        {
-            Init();
-        }
-
         private void OnDestroy()
         {
             // Stops listening to the UnitDied event
             Health.UnitDied -= HandleUnitDied;
+        }
+
+        public virtual void Init()
+        {
+            Weapon = GetComponentInChildren<Weapon>();
+            if (Weapon != null)
+            {
+                Weapon.Init(this);
+            }
+
+            mover = gameObject.GetOrAddComponent<TransformMover>();
+            mover.Init(moveSpeed, turnSpeed);
+
+            TransformMover[] headMovers =
+                tankHead.GetComponentsInChildren<TransformMover>();
+            headMover = headMovers[0];
+            barrelMover = headMovers[1];
+
+            headMover.Init(0f, turnSpeed);
+            barrelMover.Init(0f, turnSpeed);
+
+            Health = new Health(this, startingHealth);
+
+            // Registering to listen to the UnitDied event.
+            // The method must return void and have one parameter.
+            Health.UnitDied += HandleUnitDied;
         }
 
         /// <summary>
@@ -73,18 +94,11 @@ namespace TankGame
 
         protected virtual void Update()
         {
-            if (Health != null)
+            if (Health != null && Health.IsDead)
             {
-                if (Health.IsDead)
+                if (RemainingRespawnTime <= 0)
                 {
-                    if (timeOfDeath == 0)
-                    {
-                        timeOfDeath = Time.time;
-                    }
-                    else if (Time.time - timeOfDeath >= respawnTime)
-                    {
-                        Respawn();
-                    }
+                    Respawn();
                 }
             }
         }
@@ -123,30 +137,19 @@ namespace TankGame
             private set { id = value; }
         }
 
-        public virtual void Init()
+        public float RemainingRespawnTime
         {
-            Weapon = GetComponentInChildren<Weapon>();
-            if (Weapon != null)
+            get
             {
-                Weapon.Init(this);
+                if (Health.IsDead)
+                {
+                    return respawnTime - (Time.time - timeOfDeath);
+                }
+                else
+                {
+                    return 0;
+                }
             }
-
-            mover = gameObject.GetOrAddComponent<TransformMover>();
-            mover.Init(moveSpeed, turnSpeed);
-
-            TransformMover[] headMovers =
-                tankHead.GetComponentsInChildren<TransformMover>();
-            headMover = headMovers[0];
-            barrelMover = headMovers[1];
-
-            headMover.Init(0f, turnSpeed);
-            barrelMover.Init(0f, turnSpeed);
-
-            Health = new Health(this, startingHealth);
-
-            // Registering to listen to the UnitDied event.
-            // The method must return void and have one parameter.
-            Health.UnitDied += HandleUnitDied;
         }
 
         public virtual void Fire()
@@ -177,8 +180,10 @@ namespace TankGame
 
         protected virtual void HandleUnitDied(Unit unit)
         {
-            //gameObject.SetActive(false);
+            timeOfDeath = Time.time;
             Debug.Log(name + " died");
+
+            //gameObject.SetActive(false);
         }
 
         protected virtual void Respawn()
