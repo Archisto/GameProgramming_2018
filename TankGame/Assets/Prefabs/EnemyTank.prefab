@@ -530,6 +530,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 114997426961152536, guid: f867d94f2f5270c4dafb3a73e3cde915,
     type: 2}
+  holePrefab: {fileID: 114505199573592170, guid: b4101591b05d991408d4848ff166c6f3,
+    type: 2}
   firingRate: 0.8
   shootingPoint: {fileID: 4196623119579154}
 --- !u!114 &114514687903528152

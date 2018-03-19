@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TankGame.Messaging;
 
 namespace TankGame.UI
 {
@@ -17,6 +18,8 @@ namespace TankGame.UI
         /// The component which draws the text to the UI
         /// </summary>
         private Text text;
+
+        private ISubscription<UnitDiedMessage> unitDiedSubscription;
 
         /// <summary>
         /// Returns whether the unit is an enemy unit.
@@ -68,7 +71,9 @@ namespace TankGame.UI
             text.color = (IsEnemy ? Color.red : Color.green);
 
             unit.Health.HealthChanged += OnUnitHealthChanged;
-            unit.Health.UnitDied += OnUnitDied;
+            //unit.Health.UnitDied += OnUnitDied;
+            unitDiedSubscription =
+                GameManager.Instance.MessageBus.Subscribe<UnitDiedMessage>(OnUnitDied);
             SetText(unit.Health.CurrentHealth);
         }
 
@@ -82,12 +87,39 @@ namespace TankGame.UI
             SetText(health);
         }
 
-        public void OnUnitDied(Unit unit)
+        public void OnUnitDied(UnitDiedMessage msg)
         {
-            isDead = true;
-            respawnCurrentSecond = (int) unit.RemainingRespawnTime + 1;
+            // Only if the unit of the message is the
+            // unit to which this HealthUIItem belongs,
+            // handle unit death
+            if (msg.DeadUnit == unit)
+            {
+                msg.PrintMessage();
 
-            //UnregisterEventListeners();
+                isDead = true;
+                respawnCurrentSecond = (int) unit.RemainingRespawnTime + 1;
+
+                //UnregisterEventListeners();
+            }
+        }
+
+        //public void OnUnitDied(Unit unit)
+        //{
+        //    isDead = true;
+        //    respawnCurrentSecond = (int) unit.RemainingRespawnTime + 1;
+
+        //    //UnregisterEventListeners();
+        //}
+
+        private void UnregisterEventListeners()
+        {
+            unit.Health.HealthChanged -= OnUnitHealthChanged;
+
+            if (!GameManager.IsClosing)
+            {
+                GameManager.Instance.MessageBus.Unsubscribe(unitDiedSubscription);
+            }
+            //unit.Health.UnitDied -= OnUnitDied;
         }
 
         private void SetText(int health)
@@ -104,12 +136,6 @@ namespace TankGame.UI
                 respawnCurrentSecond = (int) unit.RemainingRespawnTime + 1;
                 text.text = string.Format("{0} respawns in: {1}", unit.name, respawnCurrentSecond);
             }
-        }
-
-        private void UnregisterEventListeners()
-        {
-            unit.Health.HealthChanged -= OnUnitHealthChanged;
-            unit.Health.UnitDied -= OnUnitDied;
         }
     }
 }

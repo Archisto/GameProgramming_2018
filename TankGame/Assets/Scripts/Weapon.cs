@@ -7,16 +7,24 @@ namespace TankGame
 {
     public class Weapon : MonoBehaviour
     {
-        [SerializeField]
+        [SerializeField, Header("Prefabs")]
         private Projectile projectilePrefab;
 
-        [SerializeField, Tooltip("Ammo / second")]
+        [SerializeField,
+            Tooltip("A gameObject that appears at" +
+            "the collision point for a limited time")]
+        private Hole holePrefab;
+
+        [SerializeField, Header("Settings"),
+            Tooltip("Ammo / second")]
         private float firingRate = 1 / 3f;
 
         [SerializeField]
         private Transform shootingPoint;
 
         private Pool<Projectile> projectiles;
+        public Pool<Hole> holes;
+
         private Unit owner;
         private bool canFire = true;
         private float firingTimer = 0;
@@ -42,6 +50,8 @@ namespace TankGame
 
             //projectiles = new Pool<Projectile>(
             //    projectilePrefab, 4, false, item => InitItem(item));
+
+            holes = new Pool<Hole>(holePrefab, 8, true);
         }
 
         /// <summary>
@@ -81,7 +91,7 @@ namespace TankGame
             }
 
             // Takes a projectile from the pool and launches it
-            Projectile projectile = projectiles.GetPooledObject();
+            Projectile projectile = projectiles.GetPooledObject(true);
 
             if (projectile != null)
             {
@@ -93,6 +103,8 @@ namespace TankGame
 
                 // Changes the firing direction vector's distance to 1
                 firingDirection.Normalize();
+
+                projectile.SetHole(holes.GetPooledObject(false));
 
                 projectile.transform.position = shootingPoint.position;
                 projectile.Launch(firingDirection);

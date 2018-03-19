@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TankGame.Persistence;
+using TankGame.Messaging;
 
 namespace TankGame
 {
@@ -182,6 +183,8 @@ namespace TankGame
         {
             timeOfDeath = Time.time;
             Debug.Log(name + " died");
+
+            GameManager.Instance.MessageBus.Publish(new UnitDiedMessage(this));
 
             //gameObject.SetActive(false);
         }

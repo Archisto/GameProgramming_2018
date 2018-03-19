@@ -9,22 +9,17 @@ namespace TankGame
     {
         /* SerializeField, Header, ToolTip, Range, HideInInspector, Flags, ExecuteInEditMode */
 
-        [SerializeField]
+        [SerializeField, Header("Basic Values")]
         private int damage;
 
         [SerializeField]
         private float shootingForce;
 
-        [SerializeField, Header("Explosion values")]
+        [SerializeField, Header("Explosion Values")]
         private float explosionForce;
 
         [SerializeField]
         private float explosionRadius;
-
-        [SerializeField, Header("Miscellaneous"),
-            Tooltip("A gameObject that appears at" +
-            "the collision point for a limited time")]
-        private GameObject holePrefab;
 
         [SerializeField, HideInInspector]
         private int hitMask;
@@ -44,6 +39,7 @@ namespace TankGame
         private Weapon weapon;
         private Rigidbody rBody;
 
+        private Hole hole;
         private bool holeCreated;
         private DebugLine line;
 
@@ -99,7 +95,7 @@ namespace TankGame
 
             if (!holeCreated)
             {
-                CreateHole(collision);
+                ShowHole(collision);
                 holeCreated = true;
             }
         }
@@ -125,12 +121,15 @@ namespace TankGame
             }
         }
 
-        private void CreateHole(Collision collision)
+        public void SetHole(Hole hole)
         {
-            if (holePrefab != null)
-            {
-                GameObject hole = Instantiate(holePrefab);
+            this.hole = hole;
+        }
 
+        private void ShowHole(Collision collision)
+        {
+            if (hole != null && !hole.gameObject.activeSelf)
+            {
                 hole.transform.position = transform.position;
 
                 Vector3 point = collision.contacts[0].point;
@@ -154,8 +153,40 @@ namespace TankGame
                 hole.transform.rotation = Quaternion.LookRotation(Vector3.forward, transform.position - point);
                 //hole.transform.rotation = Quaternion.LookRotation(Vector3.up, transform.position - point);
 
-                hole.SetActive(false);
+                hole.gameObject.SetActive(true);
             }
         }
+
+        //private void CreateHole(Collision collision)
+        //{
+        //    if (holePrefab != null)
+        //    {
+        //        Hole hole = Instantiate(holePrefab);
+        //        hole.transform.position = transform.position;
+
+        //        Vector3 point = collision.contacts[0].point;
+        //        //foreach (ContactPoint contact in collision.contacts)
+        //        //{
+        //        //    if (Vector3.Distance(transform.position, contact.point) <
+        //        //        Vector3.Distance(transform.position, point))
+        //        //    {
+        //        //        point = contact.point;
+        //        //    }
+        //        //}
+
+        //        if (line != null)
+        //        {
+        //            line.from = transform.position;
+        //            line.to = point;
+        //        }
+
+        //        // TODO: Fix the hole's rotation
+
+        //        hole.transform.rotation = Quaternion.LookRotation(Vector3.forward, transform.position - point);
+        //        //hole.transform.rotation = Quaternion.LookRotation(Vector3.up, transform.position - point);
+
+        //        hole.gameObject.SetActive(true);
+        //    }
+        //}
     }
 }

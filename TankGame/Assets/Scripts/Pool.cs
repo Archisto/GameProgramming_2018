@@ -92,11 +92,12 @@ namespace TankGame
 		}
 
         /// <summary>
-        /// Fetches the object form the pool.
+        /// Fetches an object form the pool.
         /// </summary>
+        /// <param name="activate">is the object returned active</param>
         /// <returns>An object from the pool or if all objects are
         /// already in use and pool cannot grow, returns null</returns>
-        public T GetPooledObject()
+        public T GetPooledObject(bool activate)
 		{
 			T result = null;
 			for ( int i = 0; i < _pool.Count; i++ )
@@ -118,7 +119,10 @@ namespace TankGame
 			// If we found an incative object let's activate it.
 			if ( result != null )
 			{
-				Activate( result );
+                if (activate)
+                {
+                    Activate(result);
+                }
 			}
 
 			return result;
