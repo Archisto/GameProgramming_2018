@@ -16,7 +16,8 @@ namespace TankGame
 
             if (lifeTime >= maxLifeTime)
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
+                //Destroy(gameObject);
             }
         }
     }

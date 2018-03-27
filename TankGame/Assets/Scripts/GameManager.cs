@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TankGame.Persistence;
 using TankGame.Messaging;
+using TankGame.Localization;
 
 namespace TankGame
 {
@@ -94,6 +95,8 @@ namespace TankGame
 
         private void Init()
         {
+            Localization.Localization.LoadLanguage(LangCode.EN);
+
             IsClosing = false;
 
             saveSystem = new SaveSystem(new JSONPersistence(SavePath));

@@ -104,6 +104,7 @@ namespace TankGame
                 // Changes the firing direction vector's distance to 1
                 firingDirection.Normalize();
 
+                // FIXME
                 projectile.SetHole(holes.GetPooledObject(false));
 
                 projectile.transform.position = shootingPoint.position;

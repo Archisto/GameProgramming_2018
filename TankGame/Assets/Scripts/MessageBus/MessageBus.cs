@@ -20,6 +20,18 @@ namespace TankGame.Messaging
             Type messageType = typeof(TMessage);
             if (subscriptions.ContainsKey(messageType))
             {
+                // Creates a copy of the subscriptions list to prevent errors
+                // if the subscription action causes an unsubscription
+                var subscriptionsList = new List<ISubscription<TMessage>>(
+                    subscriptions[messageType].Cast<ISubscription<TMessage>>());
+
+                foreach (var subscription in subscriptionsList)
+                {
+                    subscription.Action(message);
+                }
+
+                // Normal implementation:
+                /*
                 var subscriptionsList = subscriptions[messageType].
                     Cast<ISubscription<TMessage>>();
 
@@ -27,6 +39,7 @@ namespace TankGame.Messaging
                 {
                     subscription.Action(message);
                 }
+                */
             }
         }
 

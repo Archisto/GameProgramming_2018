@@ -93,11 +93,12 @@ namespace TankGame
             //weapon.ProjectileHit(this);
             PassCollisionInfoToWeapon(this);
 
-            if (!holeCreated)
-            {
-                ShowHole(collision);
-                holeCreated = true;
-            }
+            // Shows a hole at the point of impact
+            //if (!holeCreated)
+            //{
+            //    ShowHole(collision);
+            //    holeCreated = true;
+            //}
         }
 
         private void ApplyDamage()
