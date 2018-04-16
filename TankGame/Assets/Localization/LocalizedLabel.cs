@@ -2,37 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TankGame.Localization;
+using L10n = TankGame.Localization.Localization;
 
 namespace TankGame.UI
 {
     public class LocalizedLabel : MonoBehaviour
     {
         [SerializeField]
-        private Text text;
-
-        [SerializeField]
         private string key;
+
+        private Text textObj;
+
+        public string Text { get; set; }
 
         private void Awake()
         {
-            Localization.Localization.LanguageLoaded += SetText;
+            textObj = GetComponent<Text>();
+
+            L10n.LanguageLoaded += OnLanguageLoaded;
+            OnLanguageLoaded();
         }
 
-        private void Start()
+        private void OnLanguageLoaded()
         {
-            text = GetComponent<Text>();
-            SetText();
-        }
+            Text = L10n.CurrentLanguage.GetTranslation(key);
 
-        private void SetText()
-        {
-            // FIXME
-
-            if (text != null)
+            if (textObj != null)
             {
-                text.text = Localization.Localization.
-                    CurrentLanguage.GetTranslation(key);
+                textObj.text = Text;
             }
         }
     }

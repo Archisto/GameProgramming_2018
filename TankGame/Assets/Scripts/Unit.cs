@@ -52,7 +52,10 @@ namespace TankGame
         private IMover headMover;
         private IMover barrelMover;
 
-        private float timeOfDeath = 0;
+        private Vector3 startPosition;
+        private Quaternion startRotation;
+
+        private float remainingRespawnTime = 0;
 
         private void OnDestroy()
         {
@@ -84,6 +87,9 @@ namespace TankGame
             // Registering to listen to the UnitDied event.
             // The method must return void and have one parameter.
             Health.UnitDied += HandleUnitDied;
+
+            startPosition = transform.position;
+            startRotation = transform.rotation;
         }
 
         /// <summary>
@@ -97,6 +103,7 @@ namespace TankGame
         {
             if (Health != null && Health.IsDead)
             {
+                RemainingRespawnTime -= Time.deltaTime;
                 if (RemainingRespawnTime <= 0)
                 {
                     Respawn();
@@ -144,12 +151,16 @@ namespace TankGame
             {
                 if (Health.IsDead)
                 {
-                    return respawnTime - (Time.time - timeOfDeath);
+                    return remainingRespawnTime;
                 }
                 else
                 {
                     return 0;
                 }
+            }
+            private set
+            {
+                remainingRespawnTime = value;
             }
         }
 
@@ -181,9 +192,9 @@ namespace TankGame
 
         protected virtual void HandleUnitDied(Unit unit)
         {
-            timeOfDeath = Time.time;
             Debug.Log(name + " died");
 
+            RemainingRespawnTime = respawnTime;
             GameManager.Instance.MessageBus.Publish(new UnitDiedMessage(this));
 
             //gameObject.SetActive(false);
@@ -192,8 +203,15 @@ namespace TankGame
         protected virtual void Respawn()
         {
             Health.RestoreToFull();
-            timeOfDeath = 0;
+            RemainingRespawnTime = 0;
             Debug.Log(name + " respawned");
+        }
+
+        public void ResetUnit()
+        {
+            Respawn();
+            transform.position = startPosition;
+            transform.rotation = startRotation;
         }
 
         public void RequestID()
@@ -209,6 +227,7 @@ namespace TankGame
             return new UnitData
             {
                 Health = Health.CurrentHealth,
+                RemainingRespawnTime = RemainingRespawnTime,
                 Position = transform.position,
                 YRotation = transform.rotation.y,
                 ID = ID
@@ -217,7 +236,8 @@ namespace TankGame
 
         public void SetUnitData(UnitData data)
         {
-            Health.SetHealth(data.Health);
+            Health.SetHealth(data.Health, true);
+            RemainingRespawnTime = data.RemainingRespawnTime;
             transform.position = data.Position;
             Quaternion newRotation = new Quaternion
                 (transform.rotation.x, data.YRotation,

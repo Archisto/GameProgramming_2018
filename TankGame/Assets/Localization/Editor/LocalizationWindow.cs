@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using TankGame.Localization;
-using l10n = TankGame.Localization.Localization;
+using L10n = TankGame.Localization.Localization;
 
 namespace TankGame.Editor
 {
@@ -107,8 +107,8 @@ namespace TankGame.Editor
         {
             if (GUILayout.Button("Save"))
             {
-                l10n.CurrentLanguage.SetValues(localizations);
-                l10n.SaveCurrentLanguage();
+                L10n.CurrentLanguage.SetValues(localizations);
+                L10n.SaveCurrentLanguage();
             }
         }
 
@@ -125,8 +125,8 @@ namespace TankGame.Editor
             localizations.Clear();
 
             // Load localization file
-            l10n.LoadLanguage(CurrentLanguage);
-            localizations = l10n.CurrentLanguage.GetValues();
+            L10n.LoadLanguage(CurrentLanguage);
+            localizations = L10n.CurrentLanguage.GetValues();
         }
     }
 }

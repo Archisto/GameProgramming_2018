@@ -20,8 +20,8 @@ GameObject:
   m_Component:
   - component: {fileID: 224324620782175872}
   - component: {fileID: 222874608467321044}
-  - component: {fileID: 114928363729652080}
   - component: {fileID: 114999961060116272}
+  - component: {fileID: 114928363729652080}
   m_Layer: 5
   m_Name: HealthUIItemTemplate
   m_TagString: Untagged
@@ -50,10 +50,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 2
     m_MaxSize: 40
     m_Alignment: 2
     m_AlignByGeometry: 0
@@ -95,5 +95,5 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -80, y: -15}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}

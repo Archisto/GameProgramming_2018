@@ -80,6 +80,8 @@ namespace TankGame.Localization
                 {
                     LanguageLoaded();
                 }
+
+                Debug.Log("Language loaded");
             }
             // The language we are trying to load does not exist
             else

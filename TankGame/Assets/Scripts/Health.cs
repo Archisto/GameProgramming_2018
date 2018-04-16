@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq.Expressions;
 using UnityEngine;
 
 namespace TankGame
 {
-    public class Health
+    public class Health : INotifyPropertyChanged
     {
         /// <summary>
         /// An event which is triggered when the owner Unit dies
@@ -36,6 +36,8 @@ namespace TankGame
                 {
                     HealthChanged(Owner, currentHealth);
                 }
+
+                OnPropertyChanged( () => CurrentHealth );
             }
         }
 
@@ -89,7 +91,7 @@ namespace TankGame
             return false;
         }
 
-        public void SetHealth(int health)
+        public void SetHealth(int health, bool healthLoaded)
         {
             bool wasDead = IsDead;
 
@@ -97,7 +99,7 @@ namespace TankGame
 
             // If the unit's health was set to 0,
             // an event is triggered
-            if (!wasDead && IsDead)
+            if (!wasDead && IsDead && !healthLoaded)
             {
                 RaiseUnitDiedEvent();
             }
@@ -113,6 +115,17 @@ namespace TankGame
             if (UnitDied != null)
             {
                 UnitDied(Owner);
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged<T>(Expression<Func<T>> propertyLambda)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this,
+                    new PropertyChangedEventArgs(Utils.Utils.GetPropertyName(propertyLambda)));
             }
         }
     }

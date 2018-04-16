@@ -28,16 +28,24 @@ namespace TankGame.Localization
             }
         }
 
-        public Language()
-        {
-            LanguageCode = LangCode.None;
-            Debug.Log("Language created but not initialized");
-        }
+        //public Language()
+        //{
+        //    LanguageCode = LangCode.None;
+        //    Debug.Log("Language created but not initialized");
+        //}
 
         public Language(LangCode language)
         {
             LanguageCode = language;
-            Debug.Log("Language created and initialized");
+
+            if (language != LangCode.None)
+            {
+                Debug.Log("Language created and initialized");
+            }
+            else
+            {
+                Debug.LogWarning("Language not available");
+            }
         }
 
         public string GetTranslation(string key)
@@ -47,11 +55,16 @@ namespace TankGame.Localization
             // Gets the index of the key (if it exists)
             int index = keys.IndexOf(key);
 
-            // If the index is valid, sets the
-            // corresponding value to the result
+            // If the index is valid, sets the corresponding
+            // value to the result
             if (index >= 0)
             {
                 result = values[index];
+            }
+            else
+            {
+                Debug.LogError("Cannot get translation for '" + key +
+                               "'; key is invalid.");
             }
 
             return result;

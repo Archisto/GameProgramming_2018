@@ -8,16 +8,16 @@ namespace TankGame
     public class ExtensionTester : MonoBehaviour
     {
         [SerializeField]
-        private Collider collider;
+        private Collider anyCollider;
 
         [SerializeField]
         private bool includeInactive;
 
         public void Run()
         {
-            collider = gameObject.GetComponentInHierarchy<Collider>(includeInactive);
+            anyCollider = gameObject.GetComponentInHierarchy<Collider>(includeInactive);
 
-            if (collider != null)
+            if (anyCollider != null)
             {
                 Debug.Log("Collider found");
             }

@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TankGame.Messaging;
+using L10n = TankGame.Localization.Localization;
 
 namespace TankGame.UI
 {
     public class HealthUIItem : MonoBehaviour
     {
+        private const string HealthKey = "health";
+        private const string RespawnKey = "respawns";
+
         /// <summary>
         /// A reference to to the unit the health of which is drawn to the UI
         /// </summary>
@@ -45,7 +49,7 @@ namespace TankGame.UI
         private void Update()
         {
             if (isDead &&
-                unit.RemainingRespawnTime + 1 < respawnCurrentSecond)
+                unit.RemainingRespawnTime + 1 != respawnCurrentSecond)
             {
                 SetText(0);
             }
@@ -57,6 +61,8 @@ namespace TankGame.UI
         /// <param name="unit">A referenced unit</param>
         public void Init(Unit unit)
         {
+            L10n.LanguageLoaded += OnLanguageChanged;
+
             this.unit = unit;
             text = GetComponentInChildren<Text>();
 
@@ -67,13 +73,15 @@ namespace TankGame.UI
             }
 
             // Draws the health text with different colors 
-            // depending on if the unit is an enemy unit or not
-            text.color = (IsEnemy ? Color.red : Color.green);
+            // depending on if the unit is an enemy unit or not.
+            // Red for enemy, dark green for player.
+            text.color = (IsEnemy ? Color.red : new Color(0, 0.6f, 0, 1));
 
             unit.Health.HealthChanged += OnUnitHealthChanged;
             //unit.Health.UnitDied += OnUnitDied;
             unitDiedSubscription =
                 GameManager.Instance.MessageBus.Subscribe<UnitDiedMessage>(OnUnitDied);
+
             SetText(unit.Health.CurrentHealth);
         }
 
@@ -111,6 +119,11 @@ namespace TankGame.UI
         //    //UnregisterEventListeners();
         //}
 
+        private void OnLanguageChanged()
+        {
+            SetText(unit.Health.CurrentHealth);
+        }
+
         private void UnregisterEventListeners()
         {
             unit.Health.HealthChanged -= OnUnitHealthChanged;
@@ -120,21 +133,35 @@ namespace TankGame.UI
                 GameManager.Instance.MessageBus.Unsubscribe(unitDiedSubscription);
             }
             //unit.Health.UnitDied -= OnUnitDied;
+
+            L10n.LanguageLoaded -= OnLanguageChanged;
         }
 
         private void SetText(int health)
         {
+            string translation = "";
+
+            string unitKey = IsEnemy ? "enemy" : "player";
+            string unitTranslation = L10n.CurrentLanguage.GetTranslation(unitKey);
+
             if (health > 0)
             {
-                text.text = string.Format("{0} health: {1}", unit.name, health);
+                translation = L10n.CurrentLanguage.GetTranslation(HealthKey);
+                text.text = string.Format(translation, unitTranslation, health);
 
-                // C# 6 syntax for the same thing
+                // C# 6 syntax
                 //text.text = $"{unit.name} health: {health}";
             }
             else
             {
+                // TODO: Fix wrong second when loading a game with dead player
+
+                // Rounds the respawn time number down and adds 1
+                // to display seconds correctly
                 respawnCurrentSecond = (int) unit.RemainingRespawnTime + 1;
-                text.text = string.Format("{0} respawns in: {1}", unit.name, respawnCurrentSecond);
+
+                translation = L10n.CurrentLanguage.GetTranslation(RespawnKey);
+                text.text = string.Format(translation, unitTranslation, respawnCurrentSecond);
             }
         }
     }

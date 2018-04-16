@@ -10,6 +10,7 @@ namespace TankGame.Persistence
     {
         public int ID;
         public int Health;
+        public float RemainingRespawnTime;
 
         // Position
         public SerializableVector3 Position;
