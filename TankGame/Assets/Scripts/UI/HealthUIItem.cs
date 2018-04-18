@@ -12,6 +12,7 @@ namespace TankGame.UI
     {
         private const string HealthKey = "health";
         private const string RespawnKey = "respawns";
+        private const string OutOfLivesKey = "outOfLives";
 
         /// <summary>
         /// A reference to to the unit the health of which is drawn to the UI
@@ -24,6 +25,7 @@ namespace TankGame.UI
         private Text text;
 
         private ISubscription<UnitDiedMessage> unitDiedSubscription;
+        private ISubscription<GameResetMessage> gameResetSubscription;
 
         /// <summary>
         /// Returns whether the unit is an enemy unit.
@@ -39,6 +41,7 @@ namespace TankGame.UI
         }
 
         private bool isDead;
+        private bool stopUpdating;
         private int respawnCurrentSecond = 0;
 
         private void OnDestroy()
@@ -48,10 +51,17 @@ namespace TankGame.UI
 
         private void Update()
         {
-            if (isDead &&
-                unit.RemainingRespawnTime + 1 != respawnCurrentSecond)
+            if (!stopUpdating && isDead)
             {
-                SetText(0);
+                if (!IsEnemy && GameManager.Instance.GameLost)
+                {
+                    SetPlayerOutOfLivesText();
+                    stopUpdating = true;
+                }
+                if (unit.RemainingRespawnTime + 1 != respawnCurrentSecond)
+                {
+                    SetText(0);
+                }
             }
         }
 
@@ -79,8 +89,11 @@ namespace TankGame.UI
 
             unit.Health.HealthChanged += OnUnitHealthChanged;
             //unit.Health.UnitDied += OnUnitDied;
-            unitDiedSubscription =
-                GameManager.Instance.MessageBus.Subscribe<UnitDiedMessage>(OnUnitDied);
+
+            unitDiedSubscription = GameManager.Instance.
+                MessageBus.Subscribe<UnitDiedMessage>(OnUnitDied);
+            gameResetSubscription = GameManager.Instance.
+                MessageBus.Subscribe<GameResetMessage>(OnGameReset);
 
             SetText(unit.Health.CurrentHealth);
         }
@@ -102,7 +115,7 @@ namespace TankGame.UI
             // handle unit death
             if (msg.DeadUnit == unit)
             {
-                msg.PrintMessage();
+                //msg.PrintMessage();
 
                 isDead = true;
                 respawnCurrentSecond = (int) unit.RemainingRespawnTime + 1;
@@ -131,6 +144,7 @@ namespace TankGame.UI
             if (!GameManager.IsClosing)
             {
                 GameManager.Instance.MessageBus.Unsubscribe(unitDiedSubscription);
+                GameManager.Instance.MessageBus.Unsubscribe(gameResetSubscription);
             }
             //unit.Health.UnitDied -= OnUnitDied;
 
@@ -154,15 +168,36 @@ namespace TankGame.UI
             }
             else
             {
-                // TODO: Fix wrong second when loading a game with dead player
+                if (!IsEnemy && GameManager.Instance.GameLost)
+                {
+                    translation = L10n.CurrentLanguage.GetTranslation(OutOfLivesKey);
+                    text.text = string.Format(translation, unitTranslation);
+                }
+                else
+                {
+                    // Rounds the respawn time number down and adds 1
+                    // to display seconds correctly
+                    respawnCurrentSecond = (int) unit.RemainingRespawnTime + 1;
 
-                // Rounds the respawn time number down and adds 1
-                // to display seconds correctly
-                respawnCurrentSecond = (int) unit.RemainingRespawnTime + 1;
-
-                translation = L10n.CurrentLanguage.GetTranslation(RespawnKey);
-                text.text = string.Format(translation, unitTranslation, respawnCurrentSecond);
+                    translation = L10n.CurrentLanguage.GetTranslation(RespawnKey);
+                    text.text = string.Format(translation, unitTranslation, respawnCurrentSecond);
+                }
             }
+        }
+
+        private void SetPlayerOutOfLivesText()
+        {
+            string translation =
+                L10n.CurrentLanguage.GetTranslation(OutOfLivesKey);
+            string unitTranslation =
+                L10n.CurrentLanguage.GetTranslation("player");
+
+            text.text = string.Format(translation, unitTranslation);
+        }
+
+        private void OnGameReset(GameResetMessage msg)
+        {
+            stopUpdating = false;
         }
     }
 }

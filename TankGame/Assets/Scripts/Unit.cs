@@ -40,6 +40,9 @@ namespace TankGame
         private float respawnTime = 5f;
 
         [SerializeField]
+        private GameObject tankModel;
+
+        [SerializeField]
         private GameObject tankHead;
 
         [SerializeField]
@@ -56,6 +59,8 @@ namespace TankGame
         private Quaternion startRotation;
 
         private float remainingRespawnTime = 0;
+
+        public bool IsPlayerUnit { get; protected set; }
 
         private void OnDestroy()
         {
@@ -90,6 +95,11 @@ namespace TankGame
 
             startPosition = transform.position;
             startRotation = transform.rotation;
+
+            if (tankModel == null)
+            {
+                Debug.LogError("Tank model is not set.");
+            }
         }
 
         /// <summary>
@@ -101,14 +111,7 @@ namespace TankGame
 
         protected virtual void Update()
         {
-            if (Health != null && Health.IsDead)
-            {
-                RemainingRespawnTime -= Time.deltaTime;
-                if (RemainingRespawnTime <= 0)
-                {
-                    Respawn();
-                }
-            }
+            UpdateRespawn();
         }
 
         public Weapon Weapon { get; protected set; }
@@ -163,6 +166,19 @@ namespace TankGame
                 remainingRespawnTime = value;
             }
         }
+        
+        protected virtual void UpdateRespawn()
+        {
+            if (Health != null && Health.IsDead)
+            {
+                RemainingRespawnTime -= Time.deltaTime;
+                if (RemainingRespawnTime <= 0)
+                {
+                    ResetUnit();
+                    // Respawn();
+                }
+            }
+        }
 
         public virtual void Fire()
         {
@@ -192,10 +208,12 @@ namespace TankGame
 
         protected virtual void HandleUnitDied(Unit unit)
         {
-            Debug.Log(name + " died");
+            //Debug.Log(name + " died");
 
+            tankModel.SetActive(false);
             RemainingRespawnTime = respawnTime;
             GameManager.Instance.MessageBus.Publish(new UnitDiedMessage(this));
+            GameManager.Instance.UnitDied(this, IsPlayerUnit);
 
             //gameObject.SetActive(false);
         }
@@ -204,7 +222,10 @@ namespace TankGame
         {
             Health.RestoreToFull();
             RemainingRespawnTime = 0;
-            Debug.Log(name + " respawned");
+            tankModel.SetActive(true);
+            GameManager.Instance.UnitRespawned(this);
+
+            //Debug.Log(name + " respawned");
         }
 
         public void ResetUnit()
@@ -212,6 +233,12 @@ namespace TankGame
             Respawn();
             transform.position = startPosition;
             transform.rotation = startRotation;
+            ResetTankHead();
+        }
+
+        private void ResetTankHead()
+        {
+            tankHead.transform.localRotation = Quaternion.Euler(Vector3.zero);
         }
 
         public void RequestID()
@@ -229,7 +256,7 @@ namespace TankGame
                 Health = Health.CurrentHealth,
                 RemainingRespawnTime = RemainingRespawnTime,
                 Position = transform.position,
-                YRotation = transform.rotation.y,
+                YRotation = transform.rotation.eulerAngles.y,
                 ID = ID
             };
         }
@@ -239,19 +266,31 @@ namespace TankGame
             Health.SetHealth(data.Health, true);
             RemainingRespawnTime = data.RemainingRespawnTime;
             transform.position = data.Position;
-            Quaternion newRotation = new Quaternion
-                (transform.rotation.x, data.YRotation,
-                transform.rotation.z, transform.rotation.w);
-            transform.rotation = newRotation;
+
+            Vector3 newRotation = transform.rotation.eulerAngles;
+            newRotation.y = data.YRotation;
+            transform.rotation = Quaternion.Euler(newRotation);
+
             ID = data.ID;
+
+            if (Health.IsDead)
+            {
+                tankModel.SetActive(false);
+                GameManager.Instance.SpawnDestroyedTank(this);
+            }
+            else
+            {
+                tankModel.SetActive(true);
+                ResetTankHead();
+            }
         }
 
         protected virtual void OnDrawGizmos()
         {
-            if (Health != null && Health.IsDead)
-            {
-                DrawDeathSphere(); 
-            }
+            //if (Health != null && Health.IsDead)
+            //{
+            //    DrawDeathSphere(); 
+            //}
         }
 
         private void DrawDeathSphere()

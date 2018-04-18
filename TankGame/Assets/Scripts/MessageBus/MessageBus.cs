@@ -7,10 +7,11 @@ namespace TankGame.Messaging
 {
     public class MessageBus : IMessageBus
     {
-        private readonly Dictionary<Type, IList> subscriptions
-            = new Dictionary<Type, IList>();
+        private readonly Dictionary<Type, IList> subscriptions =
+            new Dictionary<Type, IList>();
 
-        public void Publish<TMessage>(TMessage message) where TMessage : IMessage
+        public void Publish<TMessage>(TMessage message)
+            where TMessage : IMessage
         {
             if (message == null)
             {

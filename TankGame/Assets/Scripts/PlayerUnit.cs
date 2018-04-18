@@ -23,10 +23,30 @@ namespace TankGame
         private Vector3 leftTreads;
         private Vector3 rightTreads;
 
+        /// <summary>
+        /// Initializes the object.
+        /// </summary>
+        public override void Init()
+        {
+            // Runs the base classes' implementation of the Init method.
+            // Initializes Mover and Weapon.
+            base.Init();
+
+            IsPlayerUnit = true;
+        }
+
         protected override void Update()
         {
             base.Update();
 
+            if ( !Health.IsDead )
+            {
+                HandleInput();
+            }
+        }
+
+        private void HandleInput()
+        {
             input = ReadMovementInput();
             Vector3 cannonInput = ReadCannonInput();
 
@@ -86,11 +106,19 @@ namespace TankGame
             rightTreads.y = 0.5f;
         }
 
+        protected override void UpdateRespawn()
+        {
+            if (GameManager.Instance.PlayerLives > 0)
+            {
+                base.UpdateRespawn();
+            }
+        }
+
         protected override void OnDrawGizmos()
         {
             base.OnDrawGizmos();
 
-            DrawTreadSpeeds();
+            //DrawTreadSpeeds();
         }
 
         private void DrawTreadSpeeds()

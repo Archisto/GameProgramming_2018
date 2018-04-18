@@ -53,19 +53,19 @@ namespace TankGame
         /// <summary>
         /// The required amount of score to win the game
         /// </summary>
-        private int targetScore = 300;
+        private int targetScore = 500;
 
         /// <summary>
-        /// The number of lives the player has at the start
+        /// The maximum number of lives the player has
         /// </summary>
-        private int startingLives = 3;
+        private int maxLives = 3;
 
         private List<Unit> enemyUnits = new List<Unit>();
         private Unit playerUnit;
+        private DestroyedTankSpawner destroyedTankSpawner;
         private UI.UI uiObj;
         private PlayerStatusUI playerStatusUI;
-
-        SaveSystem saveSystem;
+        private SaveSystem saveSystem;
 
         public string SavePath
         {
@@ -90,7 +90,7 @@ namespace TankGame
         /// <summary>
         /// The number of lives the player has at the start.
         /// </summary>
-        public int StartingLives { get { return startingLives; } }
+        public int StartingLives { get { return maxLives; } }
 
         /// <summary>
         /// The number of deaths the player has suffered.
@@ -134,6 +134,7 @@ namespace TankGame
 
             PlayerLives = StartingLives;
 
+            destroyedTankSpawner = FindObjectOfType<DestroyedTankSpawner>();
             playerStatusUI = FindObjectOfType<PlayerStatusUI>();
             saveSystem = new SaveSystem(new JSONPersistence(SavePath));
             MessageBus = new MessageBus();
@@ -191,7 +192,15 @@ namespace TankGame
         private void InitUI()
         {
             uiObj = FindObjectOfType<UI.UI>();
-            uiObj.Init();
+
+            if (uiObj != null)
+            {
+                uiObj.Init();
+            }
+            else
+            {
+                Debug.LogError("UI not found.");
+            }
         }
 
         private void FindUnits()
@@ -205,9 +214,6 @@ namespace TankGame
 
             // Adds the player unit's health to the UI
             UI.UI.Current.HealthUI.AddUnit(playerUnit);
-
-            // Registers to listen to the player dying
-            playerUnit.Health.UnitDied += PlayerDied;
 
             // Adds the enemy units' healths to the UI
             foreach (EnemyUnit enemyUnit in enemyUnits)
@@ -231,6 +237,14 @@ namespace TankGame
             else if (unit is PlayerUnit)
             {
                 playerUnit = unit;
+            }
+        }
+
+        public bool EnemyWeaponsDisabled
+        {
+            get
+            {
+                return enemyWeaponsDisabled;
             }
         }
 
@@ -261,6 +275,8 @@ namespace TankGame
         public GameData Load()
         {
             GameData data = saveSystem.Load();
+
+            ResetGame();
 
             GameWon = data.GameWon;
             GameLost = data.GameLost;
@@ -296,14 +312,6 @@ namespace TankGame
             return data;
         }
 
-        public bool EnemyWeaponsDisabled
-        {
-            get
-            {
-                return enemyWeaponsDisabled;
-            }
-        }
-
         public void AddScore(int score)
         {
             Score += score;
@@ -311,14 +319,31 @@ namespace TankGame
             CheckWin();
         }
 
-        private void PlayerDied(Unit unit)
+        /// <summary>
+        /// Spawns a tank wreckage to the position of a dead unit.
+        /// </summary>
+        /// <param name="unit">A dead unit</param>
+        /// <param name="isPlayerUnit">Is the unit a player unit</param>
+        public void UnitDied(Unit unit, bool isPlayerUnit)
         {
-            if (PlayerLives > 0)
+            if (isPlayerUnit && PlayerLives > 0)
             {
                 PlayerLives--;
                 playerStatusUI.SetDeathsText(PlayerDeaths);
                 CheckLoss();
             }
+
+            SpawnDestroyedTank(unit);
+        }
+
+        public void UnitRespawned(Unit unit)
+        {
+            destroyedTankSpawner.DespawnDestroyedTank(unit);
+        }
+
+        public void SpawnDestroyedTank(Unit unit)
+        {
+            destroyedTankSpawner.SpawnDestroyedTank(unit);
         }
 
         private void CheckWin()
@@ -347,6 +372,7 @@ namespace TankGame
         {
             GameLost = true;
             uiObj.DisplayLoseMessage(true);
+            //MessageBus.Publish(new GameLostMessage());
         }
 
         public void ResetGame()
@@ -357,6 +383,7 @@ namespace TankGame
             PlayerLives = StartingLives;
             Score = 0;
 
+            destroyedTankSpawner.DespawnAllDestroyedTanks();
             playerUnit.ResetUnit();
 
             foreach (Unit enemyUnit in enemyUnits)
@@ -366,6 +393,8 @@ namespace TankGame
 
             uiObj.ResetUI();
             playerStatusUI.UpdateText();
+
+            MessageBus.Publish(new GameResetMessage());
         }
     }
 }

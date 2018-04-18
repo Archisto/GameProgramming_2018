@@ -116,7 +116,7 @@ namespace TankGame
 				result = AddObject();
 			}
 
-			// If we found an incative object let's activate it.
+			// If we found an inactive object let's activate it.
 			if ( result != null )
 			{
                 if (activate)

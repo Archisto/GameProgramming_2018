@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TankGame.Messaging;
 using Random = UnityEngine.Random;
 
 namespace TankGame
@@ -27,8 +28,11 @@ namespace TankGame
         private Vector3 itemSpawnAreaCorner2;
 
         private Pool<Collectable> collItemPool;
+        private List<Collectable> collectables;
 
         private float elapsedItemSpawnTime = 0;
+
+        private ISubscription<GameResetMessage> gameResetSubscription;
 
         private Vector3 ItemSpawnAreaCorner1
         {
@@ -58,6 +62,11 @@ namespace TankGame
         {
             collItemPool = new Pool<Collectable>
                 (collItemPrefab, poolSize, poolShouldGrow);
+
+            collectables = new List<Collectable>();
+
+            gameResetSubscription = GameManager.Instance.
+                MessageBus.Subscribe<GameResetMessage>(OnGameReset);
 
             // Makes the item spawn area corners neat and tidy
             float minX = Mathf.Min(ItemSpawnAreaCorner1.x, ItemSpawnAreaCorner2.x);
@@ -99,12 +108,32 @@ namespace TankGame
                 item.transform.position = new Vector3(randX, 0, randZ);
                 item.InitDefaults();
                 item.SetHandler(this);
+
+                collectables.Add(item);
             }
+        }
+
+        public void DespawnAllItems()
+        {
+            foreach (Collectable collectable in collectables)
+            {
+                if (collectable.gameObject.activeSelf)
+                {
+                    ReturnItemToPool(collectable);
+                }
+            }
+
+            collectables.Clear();
         }
 
         public void ReturnItemToPool(Collectable item)
         {
             collItemPool.ReturnObject(item);
+        }
+
+        private void OnGameReset(GameResetMessage msg)
+        {
+            DespawnAllItems();
         }
 
         private void OnDrawGizmos()
@@ -114,7 +143,7 @@ namespace TankGame
 
         private void DrawSpawnArea()
         {
-            Gizmos.color = new Color(1, 0, 1, 1);
+            Gizmos.color = Color.black;
 
             Vector3 point1 = ItemSpawnAreaCorner1;
             Vector3 point2 = new Vector3(ItemSpawnAreaCorner1.x, 0, ItemSpawnAreaCorner2.z);

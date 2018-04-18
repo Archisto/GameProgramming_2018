@@ -23,7 +23,7 @@ namespace TankGame
         private Transform shootingPoint;
 
         private Pool<Projectile> projectiles;
-        public Pool<Hole> holes;
+        //public Pool<Hole> holes;
 
         private Unit owner;
         private bool canFire = true;
@@ -51,7 +51,8 @@ namespace TankGame
             //projectiles = new Pool<Projectile>(
             //    projectilePrefab, 4, false, item => InitItem(item));
 
-            holes = new Pool<Hole>(holePrefab, 8, true);
+            // FIXME
+            //holes = new Pool<Hole>(holePrefab, 8, true);
         }
 
         /// <summary>
@@ -105,7 +106,7 @@ namespace TankGame
                 firingDirection.Normalize();
 
                 // FIXME
-                projectile.SetHole(holes.GetPooledObject(false));
+                //projectile.SetHole(holes.GetPooledObject(false));
 
                 projectile.transform.position = shootingPoint.position;
                 projectile.Launch(firingDirection);
