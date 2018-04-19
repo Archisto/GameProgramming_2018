@@ -32,8 +32,14 @@ namespace TankGame
 
         private float elapsedItemSpawnTime = 0;
 
+        /// <summary>
+        /// Message bus subscription to the game resetting
+        /// </summary>
         private ISubscription<GameResetMessage> gameResetSubscription;
 
+        /// <summary>
+        /// A corner of the rectangular collectable spawn area.
+        /// </summary>
         private Vector3 ItemSpawnAreaCorner1
         {
             get
@@ -46,6 +52,9 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// A corner of the rectangular collectable spawn area.
+        /// </summary>
         private Vector3 ItemSpawnAreaCorner2
         {
             get
@@ -58,6 +67,9 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Initializes the object.
+        /// </summary>
         private void Start()
         {
             collItemPool = new Pool<Collectable>
@@ -77,11 +89,18 @@ namespace TankGame
             ItemSpawnAreaCorner2 = new Vector3(maxX, 0, maxZ);
         }
 
+        /// <summary>
+        /// Updates the object each frame.
+        /// </summary>
         private void Update()
         {
             UpdateItemSpawnTime();
         }
 
+        /// <summary>
+        /// Spawns collectables at set intervals
+        /// if the game is not over.
+        /// </summary>
         private void UpdateItemSpawnTime()
         {
             if ( !GameManager.Instance.GameWon &&
@@ -96,12 +115,16 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Spawns a collectable at a random position within the spawn area.
+        /// </summary>
         private void SpawnItem()
         {
             Collectable item = collItemPool.GetPooledObject(true);
 
             if (item != null)
             {
+                // Gets random x- and z-coordinates
                 float randX = Random.Range(ItemSpawnAreaCorner1.x, ItemSpawnAreaCorner2.x);
                 float randZ = Random.Range(ItemSpawnAreaCorner1.z, ItemSpawnAreaCorner2.z);
 
@@ -113,6 +136,9 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Removes all collectables from the world.
+        /// </summary>
         public void DespawnAllItems()
         {
             foreach (Collectable collectable in collectables)
@@ -126,21 +152,35 @@ namespace TankGame
             collectables.Clear();
         }
 
+        /// <summary>
+        /// Returns a collectable to the pool.
+        /// </summary>
+        /// <param name="item">A collectable</param>
         public void ReturnItemToPool(Collectable item)
         {
             collItemPool.ReturnObject(item);
         }
 
+        /// <summary>
+        /// Removes all collectables from the world if the game is reset.
+        /// </summary>
+        /// <param name="msg">A game reset message</param>
         private void OnGameReset(GameResetMessage msg)
         {
             DespawnAllItems();
         }
 
+        /// <summary>
+        /// Draws debug gizmos.
+        /// </summary>
         private void OnDrawGizmos()
         {
             DrawSpawnArea();
         }
 
+        /// <summary>
+        /// Draws the borders of the collectable spawn area.
+        /// </summary>
         private void DrawSpawnArea()
         {
             Gizmos.color = Color.black;
