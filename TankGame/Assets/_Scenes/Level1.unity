@@ -3162,7 +3162,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1163635161
 GameObject:
@@ -3405,7 +3405,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1301640612
 MonoBehaviour:
@@ -3840,7 +3840,7 @@ Prefab:
     - target: {fileID: 224495387005907254, guid: e0714c56e2a713e4ab6d144eaaf734e2,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: 280
+      value: 222
       objectReference: {fileID: 0}
     - target: {fileID: 224495387005907254, guid: e0714c56e2a713e4ab6d144eaaf734e2,
         type: 2}
@@ -4455,7 +4455,7 @@ Transform:
   - {fileID: 1574133704}
   - {fileID: 341556131}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1574133703
 GameObject:
@@ -4873,16 +4873,6 @@ Prefab:
       propertyPath: path
       value: 
       objectReference: {fileID: 782875167}
-    - target: {fileID: 114845363568469000, guid: 1d114179a5c12b441aa8749ebff62b43,
-        type: 2}
-      propertyPath: detectEnemyDistance
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 114845363568469000, guid: 1d114179a5c12b441aa8749ebff62b43,
-        type: 2}
-      propertyPath: shootingDistance
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1d114179a5c12b441aa8749ebff62b43, type: 2}
   m_IsPrefabParent: 0
@@ -5054,5 +5044,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

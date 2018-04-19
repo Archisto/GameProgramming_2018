@@ -48,6 +48,7 @@ namespace TankGame
 
         private Weapon weapon;
         private Rigidbody rBody;
+        private ParticleSystem hitParticles;
 
         /// <summary>
         /// The hole the projectile creates on collision
@@ -56,7 +57,7 @@ namespace TankGame
         private bool holeCreated;
 
         /// <summary>
-        /// A line which shows the projectile's hit angle
+        /// A line which shows the projectile's hit angle. Debugging purposes only.
         /// </summary>
         private DebugLine line;
 
@@ -85,6 +86,7 @@ namespace TankGame
         public void Init(Action<Projectile> collisionCallback)
         {
             PassCollisionInfoToWeapon = collisionCallback;
+            hitParticles = GetComponent<ParticleSystem>();
             line = FindObjectOfType<DebugLine>();
         }
 
@@ -94,10 +96,9 @@ namespace TankGame
         /// <param name="direction">Firing direction</param>
         public void Launch(Vector3 direction)
         {
-            // TODO: Add particle effects
 
             Rigidbody.AddForce(direction.normalized * shootingForce, ForceMode.Impulse);
-            holeCreated = false;
+            //holeCreated = false;
         }
 
         /// <summary>
@@ -106,8 +107,6 @@ namespace TankGame
         /// <param name="collision">Collision info</param>
         protected void OnCollisionEnter(Collision collision)
         {
-            // TODO: Add particle effects
-
             ApplyDamage();
 
             // Stops the projectile
@@ -115,6 +114,12 @@ namespace TankGame
 
             // Passes collision information to the weapon
             PassCollisionInfoToWeapon(this);
+
+            // Plays particle effects
+            if (hitParticles != null)
+            {
+                hitParticles.Play();
+            }
 
             // Creates a hole at the point of impact
             //if (!holeCreated)

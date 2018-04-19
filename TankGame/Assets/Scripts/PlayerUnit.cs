@@ -34,7 +34,7 @@ namespace TankGame
         [SerializeField]
         private string cannonVerticalAxis = "Cannon Vertical";
 
-        private Vector2 input;
+        private Vector2 movementInput;
         private Vector3 leftTreads;
         private Vector3 rightTreads;
 
@@ -69,14 +69,17 @@ namespace TankGame
         /// </summary>
         private void HandleInput()
         {
-            input = ReadMovementInput();
+            movementInput = ReadMovementInput();
             Vector3 cannonInput = ReadCannonInput();
 
-            Mover.MoveTank(input);
+            // Moving
+            Mover.MoveTank(movementInput);
 
+            // Aiming
             ((TransformMover) TankHeadMover).TurnAxis(Vector3.up, cannonInput.x);
             ((TransformMover) BarrelMover).TurnAxis(Vector3.right, -1f * cannonInput.y, -25f, 6.5f);
 
+            // Shooting
             if (ReadShootingInput())
             {
                 Fire();
@@ -177,17 +180,17 @@ namespace TankGame
             {
                 var forwardDir = transform.TransformDirection(Vector3.forward);
 
-                float leftTurning = (input.x > 0 ? input.x : 0);
-                float rightTurning = (input.x < 0 ? -1f * input.x : 0);
+                float leftTurning = (movementInput.x > 0 ? movementInput.x : 0);
+                float rightTurning = (movementInput.x < 0 ? -1f * movementInput.x : 0);
 
-                if (input.y < 0)
+                if (movementInput.y < 0)
                 {
                     leftTurning = -1f * leftTurning;
                     rightTurning = -1f * rightTurning;
                 }
 
-                float leftLength = input.y - leftTurning / 2;
-                float rightLength = input.y - rightTurning / 2;
+                float leftLength = movementInput.y - leftTurning / 2;
+                float rightLength = movementInput.y - rightTurning / 2;
 
                 Vector3 leftTarget = leftTreads + leftLength * forwardDir;
                 Vector3 rightTarget = rightTreads + rightLength * forwardDir;

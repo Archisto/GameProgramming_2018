@@ -26,26 +26,23 @@ namespace TankGame
         /// <summary>
         /// Moves the game object.
         /// </summary>
-        /// <param name="position">The position of a target object</param>
-        public void Move(Vector3 position)
+        /// <param name="amount">Movement speed factor</param>
+        public void Move(float amount)
         {
-            Move(moveSpeed);
-            Turn(position, true);
+            Vector3 position = transform.position;
+            Vector3 movement = transform.forward * moveSpeed * amount * Time.deltaTime;
+            position += movement;
+            transform.position = position;
         }
 
         /// <summary>
         /// Moves the game object.
         /// </summary>
-        /// <param name="amount">Movement amount</param>
-        public void Move(float amount)
+        /// <param name="position">The position of a target object</param>
+        public void Move(Vector3 position)
         {
-            // FIXME: amount * moveSpeed cubes the moveSpeed, not supposed to
-            // Can't fix right away, results in slow units
-
-            Vector3 position = transform.position;
-            Vector3 movement = transform.forward * amount * moveSpeed * Time.deltaTime;
-            position += movement;
-            transform.position = position;
+            Move(1);
+            Turn(position, true);
         }
 
         /// <summary>
@@ -83,21 +80,20 @@ namespace TankGame
         /// <summary>
         /// Turns the game object.
         /// </summary>
-        /// <param name="amount">Turning amount</param>
+        /// <param name="amount">Turning speed factor</param>
         public void Turn(float amount)
         {
-            float rotation = amount * turnSpeed * Time.deltaTime;
-            transform.Rotate(Vector3.up, rotation, Space.Self);
+            TurnAxis(Vector3.up, amount);
         }
 
         /// <summary>
         /// Turns the game object on an axis.
         /// </summary>
         /// <param name="axis">An axis</param>
-        /// <param name="amount">Movement amount</param>
+        /// <param name="amount">Turning speed factor</param>
         public void TurnAxis(Vector3 axis, float amount)
         {
-            float rotation = amount * turnSpeed * Time.deltaTime;
+            float rotation = turnSpeed * amount * Time.deltaTime;
             transform.Rotate(axis, rotation, Space.Self);
         }
 
@@ -110,9 +106,10 @@ namespace TankGame
         /// <param name="max">Maximum angle (degrees)</param>
         public void TurnAxis(Vector3 axis, float amount, float min, float max)
         {
-            // TODO: Check if the rotation is valid before assigning it to the game object.
-            // Transforms automatically clamp angles between 0 and 360.
-            
+            //Vector3 newRotation = ValidVector
+            //    (transform.rotation.eulerAngles, axis, amount, min, max);
+            //transform.rotation = Quaternion.Euler(newRotation);
+
             Quaternion oldRotation = transform.rotation;
 
             float rotation = amount * turnSpeed * Time.deltaTime;
@@ -123,6 +120,37 @@ namespace TankGame
                 transform.rotation = oldRotation;
             }
         }
+
+        //private Vector3 ValidVector(Vector3 unalteredVector, Vector3 axis, float amount, float min, float max)
+        //{
+        //    Vector3 newVector = unalteredVector;
+        //    newVector += axis * amount;
+
+        //    // The final value on the given axis
+        //    float axisValue = 0;
+
+        //    if (axis.x > 1)
+        //    {
+        //        axisValue = newVector.x;
+        //    }
+        //    else if (axis.y > 1)
+        //    {
+        //        axisValue = newVector.y;
+        //    }
+        //    else if (axis.z > 1)
+        //    {
+        //        axisValue = newVector.z;
+        //    }
+
+        //    if (axisValue >= min && axisValue <= max)
+        //    {
+        //        return newVector;
+        //    }
+        //    else
+        //    {
+        //        return unalteredVector;
+        //    }
+        //}
 
         /// <summary>
         /// Checks if the game object's rotation on an axis is valid.

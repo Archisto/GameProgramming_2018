@@ -13,7 +13,7 @@ namespace TankGame
         /// <summary>
         /// The projectile
         /// </summary>
-        [SerializeField, Header("Prefabs")]
+        [SerializeField]
         private Projectile projectilePrefab;
 
         [SerializeField,
@@ -21,8 +21,12 @@ namespace TankGame
             "the collision point for a limited time")]
         private Hole holePrefab;
 
-        [SerializeField, Header("Settings"),
-            Tooltip("Ammo / second")]
+        [SerializeField,
+            Tooltip("An explosion effect which is " +
+            "played when a projectile hits something")]
+        private ParticleSystem explosionParticles;
+
+        [SerializeField, Tooltip("Projectiles / second")]
         private float firingRate = 1 / 3f;
 
         [SerializeField]
@@ -32,8 +36,10 @@ namespace TankGame
         //public Pool<Hole> holes;
 
         private Unit owner;
+        private ParticleSystem shootParticles;
         private bool canFire = true;
         private float firingTimer = 0;
+        private Vector3 lastHitPosition;
 
         /// <summary>
         /// Initializes the object.
@@ -42,6 +48,7 @@ namespace TankGame
         public void Init(Unit owner)
         {
             this.owner = owner;
+            shootParticles = GetComponent<ParticleSystem>();
 
             projectiles = new Pool<Projectile>(projectilePrefab, 4, false,
                 //item => item.Init(this)); // Lambda parameter - no return value and one parameter (the item)
@@ -75,7 +82,6 @@ namespace TankGame
             projectile.Init(ProjectileHit);
         }
 
-
         /// <summary>
         /// A method that is passed to projectiles to call when they hit something.
         /// </summary>
@@ -83,7 +89,18 @@ namespace TankGame
         private void ProjectileHit(Projectile projectile)
         {
             // Returns the projectile to the pool
-            if (!projectiles.ReturnObject(projectile))
+            if (projectiles.ReturnObject(projectile))
+            {
+                lastHitPosition = projectile.transform.position;
+
+                // Plays particle effects
+                if (explosionParticles != null)
+                {
+                    explosionParticles.transform.position = lastHitPosition;
+                    explosionParticles.Play();
+                }
+            }
+            else
             {
                 Debug.LogError("Could not return " +
                     "the projectile back to the pool.");
@@ -96,6 +113,12 @@ namespace TankGame
         protected virtual void Update()
         {
             UpdateFiringTimer();
+
+            // Keeps the explosion effect at the right position
+            if (explosionParticles != null && explosionParticles.isPlaying)
+            {
+                explosionParticles.transform.position = lastHitPosition;
+            }
         }
 
         /// <summary>
@@ -145,6 +168,12 @@ namespace TankGame
 
                 projectile.transform.position = shootingPoint.position;
                 projectile.Launch(firingDirection);
+
+                // Plays particle effects
+                if (shootParticles != null)
+                {
+                    shootParticles.Play();
+                }
 
                 return true;
             }

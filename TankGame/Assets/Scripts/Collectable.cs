@@ -189,8 +189,6 @@ namespace TankGame
 
         public virtual void Activate()
         {
-            // TODO: What happens when collected?
-
             // Returns if already collected
             if (!_collectableObject.activeSelf)
             {
