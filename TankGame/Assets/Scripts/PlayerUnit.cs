@@ -5,21 +5,36 @@ using UnityEngine;
 
 namespace TankGame
 {
+    /// <summary>
+    /// A tank unit controlled by a player.
+    /// </summary>
     public class PlayerUnit : Unit
     {
+        /// <summary>
+        /// The name of the Horizontal axis input
+        /// </summary>
         [SerializeField]
         private string horizontalAxis = "Horizontal";
 
+        /// <summary>
+        /// The name of the Vertical axis input
+        /// </summary>
         [SerializeField]
         private string verticalAxis = "Vertical";
 
+        /// <summary>
+        /// The name of the Cannon Horizontal axis input
+        /// </summary>
         [SerializeField]
         private string cannonHorizontalAxis = "Cannon Horizontal";
 
+        /// <summary>
+        /// The name of the Cannon Vertical axis input
+        /// </summary>
         [SerializeField]
         private string cannonVerticalAxis = "Cannon Vertical";
 
-        private Vector3 input;
+        private Vector2 input;
         private Vector3 leftTreads;
         private Vector3 rightTreads;
 
@@ -35,16 +50,23 @@ namespace TankGame
             IsPlayerUnit = true;
         }
 
+        /// <summary>
+        /// Updates the object each frame.
+        /// </summary>
         protected override void Update()
         {
             base.Update();
 
+            // Reads player input if the unit is not dead
             if ( !Health.IsDead )
             {
                 HandleInput();
             }
         }
 
+        /// <summary>
+        /// Handles player input.
+        /// </summary>
         private void HandleInput()
         {
             input = ReadMovementInput();
@@ -60,17 +82,25 @@ namespace TankGame
                 Fire();
             }
 
-            UpdateTreadsPositions();
+            //RecordTreadsPositions();
         }
 
-        private Vector3 ReadMovementInput()
+        /// <summary>
+        /// Reads the player's input for moving the unit.
+        /// </summary>
+        /// <returns>The unit's turning and movement vector</returns>
+        private Vector2 ReadMovementInput()
         {
             float turning = Input.GetAxis(horizontalAxis);
             float movement = Input.GetAxis(verticalAxis);
 
-            return new Vector3(turning, movement);
+            return new Vector2(turning, movement);
         }
 
+        /// <summary>
+        /// Reads the player's input for moving the unit's cannon.
+        /// </summary>
+        /// <returns>The unit's cannon's turning and tilt vector</returns>
         private Vector3 ReadCannonInput()
         {
             float turning = Input.GetAxis(cannonHorizontalAxis);
@@ -79,12 +109,20 @@ namespace TankGame
             return new Vector3(turning, tilt);
         }
 
+        /// <summary>
+        /// Reads the player's input for firing.
+        /// </summary>
+        /// <returns>Should the cannon be fired</returns>
         private bool ReadShootingInput()
         {
             return Input.GetButtonDown("Fire1");
         }
 
-        private void UpdateTreadsPositions()
+        /// <summary>
+        /// Records the unit's treads' positions in relation to its body
+        /// to be used for the tread speed gizmos.
+        /// </summary>
+        private void RecordTreadsPositions()
         {
             leftTreads = transform.position;
             rightTreads = transform.position;
@@ -106,6 +144,10 @@ namespace TankGame
             rightTreads.y = 0.5f;
         }
 
+        /// <summary>
+        /// Handles spawning if the unit is dead
+        /// and the player is not out of lives.
+        /// </summary>
         protected override void UpdateRespawn()
         {
             if (GameManager.Instance.PlayerLives > 0)
@@ -114,6 +156,9 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Draws gizmos.
+        /// </summary>
         protected override void OnDrawGizmos()
         {
             base.OnDrawGizmos();
@@ -121,8 +166,13 @@ namespace TankGame
             //DrawTreadSpeeds();
         }
 
+        /// <summary>
+        /// Draws lines marking the speeds of each tread.
+        /// </summary>
         private void DrawTreadSpeeds()
         {
+            // FIXME
+
             //if (input != Vector3.zero)
             {
                 var forwardDir = transform.TransformDirection(Vector3.forward);

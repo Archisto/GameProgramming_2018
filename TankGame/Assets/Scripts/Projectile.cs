@@ -5,10 +5,11 @@ using UnityEngine;
 
 namespace TankGame
 {
+    /// <summary>
+    /// A projectile which deals damage to opposing units.
+    /// </summary>
     public class Projectile : MonoBehaviour
     {
-        /* SerializeField, Header, ToolTip, Range, HideInInspector, Flags, ExecuteInEditMode */
-
         [SerializeField, Header("Basic Values")]
         private int damage;
 
@@ -21,8 +22,17 @@ namespace TankGame
         [SerializeField]
         private float explosionRadius;
 
+        /// <summary>
+        /// A mask of targets the projectile can hit
+        /// </summary>
         [SerializeField, HideInInspector]
         private int hitMask;
+
+        /// <summary>
+        /// An action which is passed from weapon and
+        /// fired when the projectile hits something.
+        /// </summary>
+        private Action<Projectile> PassCollisionInfoToWeapon;
 
         //[SerializeField]
         //private ProjectileType type;
@@ -39,8 +49,15 @@ namespace TankGame
         private Weapon weapon;
         private Rigidbody rBody;
 
+        /// <summary>
+        /// The hole the projectile creates on collision
+        /// </summary>
         private Hole hole;
         private bool holeCreated;
+
+        /// <summary>
+        /// A line which shows the projectile's hit angle
+        /// </summary>
         private DebugLine line;
 
         /// <summary>
@@ -55,59 +72,71 @@ namespace TankGame
                 {
                     rBody = gameObject.GetOrAddComponent<Rigidbody>();
                 }
+
                 return rBody;
             }
         }
 
-        //public void Init(Weapon weapon)
-        //{
-        //    this.weapon = weapon;
-        //    line = FindObjectOfType<DebugLine>();
-        //}
-
-        private Action<Projectile> PassCollisionInfoToWeapon;
+        /// <summary>
+        /// Initializes the object.
+        /// </summary>
+        /// <param name="collisionCallback">A method which is called when
+        /// the projectile hit ssomething</param>
         public void Init(Action<Projectile> collisionCallback)
         {
             PassCollisionInfoToWeapon = collisionCallback;
             line = FindObjectOfType<DebugLine>();
         }
 
+        /// <summary>
+        /// Launches the projectile at the given direction.
+        /// </summary>
+        /// <param name="direction">Firing direction</param>
         public void Launch(Vector3 direction)
         {
             // TODO: Add particle effects
 
             Rigidbody.AddForce(direction.normalized * shootingForce, ForceMode.Impulse);
-
             holeCreated = false;
         }
 
+        /// <summary>
+        /// Called when the projectile collides with something.
+        /// </summary>
+        /// <param name="collision">Collision info</param>
         protected void OnCollisionEnter(Collision collision)
         {
             // TODO: Add particle effects
 
             ApplyDamage();
 
+            // Stops the projectile
             Rigidbody.velocity = Vector3.zero;
 
             // Passes collision information to the weapon
-            //weapon.ProjectileHit(this);
             PassCollisionInfoToWeapon(this);
 
-            // Shows a hole at the point of impact
+            // Creates a hole at the point of impact
             //if (!holeCreated)
             //{
-            //    ShowHole(collision);
+            //    CreateHole(collision);
             //    holeCreated = true;
             //}
         }
 
+        /// <summary>
+        /// Deals damage to the hit target.
+        /// </summary>
         private void ApplyDamage()
         {
             List<IDamageReceiver> alreadyDamaged = new List<IDamageReceiver>();
 
+            // Gets all damage receiving colliders in
+            // an area within the explosion radius
             Collider[] damageReceivers = Physics.OverlapSphere(
                 transform.position, explosionRadius, hitMask);
 
+            // Deals damage to the damage receivers if they are valid
             for (int i = 0; i < damageReceivers.Length; i++)
             {
                 IDamageReceiver damageReceiver =
@@ -122,12 +151,20 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Sets the hole this projectile creates on collision.
+        /// </summary>
+        /// <param name="hole"></param>
         public void SetHole(Hole hole)
         {
             this.hole = hole;
         }
 
-        private void ShowHole(Collision collision)
+        /// <summary>
+        /// Creates a hole at the point of collision.
+        /// </summary>
+        /// <param name="collision">Collision info</param>
+        private void CreateHole(Collision collision)
         {
             if (hole != null && !hole.gameObject.activeSelf)
             {

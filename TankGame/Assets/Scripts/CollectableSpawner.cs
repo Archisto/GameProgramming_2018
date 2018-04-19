@@ -7,11 +7,21 @@ using Random = UnityEngine.Random;
 
 namespace TankGame
 {
+    /// <summary>
+    /// A class which spawns collectables to random positions within an area.
+    /// </summary>
     public class CollectableSpawner : MonoBehaviour
     {
+        /// <summary>
+        /// The spawned collectable
+        /// </summary>
         [SerializeField]
         private Collectable collItemPrefab;
 
+        /// <summary>
+        /// Is a new item created when attempting
+        /// to get one from the pool but it's empty
+        /// </summary>
         [SerializeField]
         private int poolSize;
 

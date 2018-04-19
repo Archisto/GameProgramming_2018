@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace TankGame.Messaging
 {
+    /// <summary>
+    /// A message that is sent when the game is lost.
+    /// </summary>
     public class GameLostMessage : IMessage
     {
         public GameLostMessage() { }

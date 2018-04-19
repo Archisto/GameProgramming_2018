@@ -12,6 +12,9 @@ using L10n = TankGame.Localization.Localization;
 
 namespace TankGame
 {
+    /// <summary>
+    /// A class that manages the most important aspects of the game.
+    /// </summary>
     public class GameManager : MonoBehaviour
     {
         #region Statics
@@ -45,8 +48,19 @@ namespace TankGame
 
         #endregion
 
+        // Useful field tags:
+        /* SerializeField, Header, ToolTip, Range, HideInInspector,
+         * Flags, ExecuteInEditMode */
+
+        /// <summary>
+        /// Preferences key for the saved language setting
+        /// </summary>
         private const string LanguageKey = "Language";
 
+        /// <summary>
+        /// Are enemy weapons disabled.
+        /// Debugging purposes only.
+        /// </summary>
         [SerializeField]
         private bool enemyWeaponsDisabled;
 
@@ -67,6 +81,9 @@ namespace TankGame
         private PlayerStatusUI playerStatusUI;
         private SaveSystem saveSystem;
 
+        /// <summary>
+        /// The file path where the game is saved.
+        /// </summary>
         public string SavePath
         {
             get
@@ -75,10 +92,19 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// A message bus for publishing messages.
+        /// </summary>
         public MessageBus MessageBus { get; private set; }
 
+        /// <summary>
+        /// Did the player win the game.
+        /// </summary>
         public bool GameWon { get; private set; }
 
+        /// <summary>
+        /// Did the player lose the game.
+        /// </summary>
         public bool GameLost { get; private set; }
 
         /// <summary>
@@ -88,14 +114,14 @@ namespace TankGame
         public int PlayerLives { get; private set; }
 
         /// <summary>
-        /// The number of lives the player has at the start.
+        /// The maximum number of lives the player has.
         /// </summary>
-        public int StartingLives { get { return maxLives; } }
+        public int MaxLives { get { return maxLives; } }
 
         /// <summary>
         /// The number of deaths the player has suffered.
         /// </summary>
-        public int PlayerDeaths { get { return StartingLives - PlayerLives; } }
+        public int PlayerDeaths { get { return MaxLives - PlayerLives; } }
 
         /// <summary>
         /// The player's score.
@@ -107,8 +133,12 @@ namespace TankGame
         /// </summary>
         public int TargetScore { get { return targetScore; } }
 
+        /// <summary>
+        /// Initializes the object before Start is called.
+        /// </summary>
         private void Awake()
         {
+            // Keeps only one instance of this object and removes others
             if (instance == null)
             {
                 instance = this;
@@ -122,31 +152,31 @@ namespace TankGame
             Init();
         }
 
-        //private void Start()
-        //{
-        //    InitUI();
-        //    FindUnits();
-        //}
-
+        /// <summary>
+        /// Initializes the object.
+        /// </summary>
         private void Init()
         {
             InitLocalization();
 
-            PlayerLives = StartingLives;
+            IsClosing = false;
+            PlayerLives = MaxLives;
 
             destroyedTankSpawner = FindObjectOfType<DestroyedTankSpawner>();
             playerStatusUI = FindObjectOfType<PlayerStatusUI>();
             saveSystem = new SaveSystem(new JSONPersistence(SavePath));
             MessageBus = new MessageBus();
 
-            IsClosing = false;
-
             InitUI();
-            FindUnits();
+            InitUnits();
         }
 
+        /// <summary>
+        /// Updates the object each frame.
+        /// </summary>
         protected void Update()
         {
+            // Handles player input
             bool saveInput = Input.GetKeyUp(KeyCode.F2);
             bool loadInput = Input.GetKeyUp(KeyCode.F3);
             bool resetInput = Input.GetKeyUp(KeyCode.R);
@@ -165,16 +195,25 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Called when the object is destroyed.
+        /// </summary>
         private void OnDestroy()
         {
             L10n.LanguageLoaded -= OnLanguageLoaded;
         }
 
+        /// <summary>
+        /// Called when the application is closing.
+        /// </summary>
         private void OnApplicationQuit()
         {
             IsClosing = true;
         }
 
+        /// <summary>
+        /// Initializes localization.
+        /// </summary>
         private void InitLocalization()
         {
             LangCode currentLang =
@@ -183,12 +222,19 @@ namespace TankGame
             L10n.LanguageLoaded += OnLanguageLoaded;
         }
 
+        /// <summary>
+        /// Called when a LanguageLoaded event is fired.
+        /// </summary>
         private void OnLanguageLoaded()
         {
+            // Saves the currently selected language
             PlayerPrefs.SetInt(LanguageKey,
                 (int) L10n.CurrentLanguage.LanguageCode);
         }
 
+        /// <summary>
+        /// Initializes UI.
+        /// </summary>
         private void InitUI()
         {
             uiObj = FindObjectOfType<UI.UI>();
@@ -203,7 +249,10 @@ namespace TankGame
             }
         }
 
-        private void FindUnits()
+        /// <summary>
+        /// Initializes player and enemy units.
+        /// </summary>
+        private void InitUnits()
         {
             Unit[] allUnits = FindObjectsOfType<Unit>();
 
@@ -222,6 +271,10 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Adds a unit to a unit list.
+        /// </summary>
+        /// <param name="unit">A unit</param>
         private void AddUnit(Unit unit)
         {
             unit.Init();
@@ -240,6 +293,9 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Are enemy weapons disabled.
+        /// </summary>
         public bool EnemyWeaponsDisabled
         {
             get
@@ -249,7 +305,7 @@ namespace TankGame
         }
 
         /// <summary>
-        /// Gets data from units and stores it to a data object.
+        /// Gets data from the game and units and stores it to a data object.
         /// </summary>
         public void Save()
         {
@@ -272,6 +328,10 @@ namespace TankGame
             Debug.Log("Game saved");
         }
 
+        /// <summary>
+        /// Loads saved data.
+        /// </summary>
+        /// <returns>Loaded game data</returns>
         public GameData Load()
         {
             GameData data = saveSystem.Load();
@@ -304,14 +364,17 @@ namespace TankGame
             }
 
             playerUnit.SetUnitData(data.PlayerData);
+            playerStatusUI.UpdateText();
 
             Debug.Log("Game loaded");
-
-            playerStatusUI.UpdateText();
 
             return data;
         }
 
+        /// <summary>
+        /// Gives score to the player.
+        /// </summary>
+        /// <param name="score">Score amount</param>
         public void AddScore(int score)
         {
             Score += score;
@@ -336,38 +399,60 @@ namespace TankGame
             SpawnDestroyedTank(unit);
         }
 
+        /// <summary>
+        /// Handles unit respawning.
+        /// </summary>
+        /// <param name="unit">A respawned unit</param>
         public void UnitRespawned(Unit unit)
         {
             destroyedTankSpawner.DespawnDestroyedTank(unit);
         }
 
+        /// <summary>
+        /// Spawns a destroyed tank to the position of a dead unit.
+        /// </summary>
+        /// <param name="unit">A dead unit</param>
         public void SpawnDestroyedTank(Unit unit)
         {
             destroyedTankSpawner.SpawnDestroyedTank(unit);
         }
 
+        /// <summary>
+        /// Checks if the player should win the game.
+        /// </summary>
         private void CheckWin()
         {
-            if (Score >= TargetScore && !GameWon && !GameLost)
+            if (Score >= TargetScore
+                && !GameWon && !GameLost)
             {
                 WinGame();
             }
         }
 
+        /// <summary>
+        /// Checks if the player should lose the game.
+        /// </summary>
         private void CheckLoss()
         {
-            if (PlayerLives <= 0 && !GameLost && !GameWon)
+            if (PlayerLives <= 0
+                && !GameLost && !GameWon)
             {
                 LoseGame();
             }
         }
 
+        /// <summary>
+        /// Sets the game won.
+        /// </summary>
         private void WinGame()
         {
             GameWon = true;
             uiObj.DisplayWinMessage(true);
         }
 
+        /// <summary>
+        /// Sets the game lost.
+        /// </summary>
         private void LoseGame()
         {
             GameLost = true;
@@ -375,20 +460,23 @@ namespace TankGame
             //MessageBus.Publish(new GameLostMessage());
         }
 
+        /// <summary>
+        /// Resets everything and starts the game from the beginning.
+        /// </summary>
         public void ResetGame()
         {
             GameWon = false;
             GameLost = false;
 
-            PlayerLives = StartingLives;
+            PlayerLives = MaxLives;
             Score = 0;
 
             destroyedTankSpawner.DespawnAllDestroyedTanks();
-            playerUnit.ResetUnit();
+            playerUnit.Respawn();
 
             foreach (Unit enemyUnit in enemyUnits)
             {
-                enemyUnit.ResetUnit();
+                enemyUnit.Respawn();
             }
 
             uiObj.ResetUI();

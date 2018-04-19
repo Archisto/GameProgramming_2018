@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TankGame.Localization
 {
+    /// <summary>
+    /// Stores key and value pairs of a language.
+    /// </summary>
     [Serializable]
     public class Language
     {
@@ -16,6 +19,9 @@ namespace TankGame.Localization
         [SerializeField]
         private LangCode langCode;
 
+        /// <summary>
+        /// The language's code.
+        /// </summary>
         public LangCode LanguageCode
         {
             get
@@ -28,12 +34,10 @@ namespace TankGame.Localization
             }
         }
 
-        //public Language()
-        //{
-        //    LanguageCode = LangCode.None;
-        //    Debug.Log("Language created but not initialized");
-        //}
-
+        /// <summary>
+        /// Initializes the language.
+        /// </summary>
+        /// <param name="language">A language code</param>
         public Language(LangCode language)
         {
             LanguageCode = language;
@@ -48,6 +52,11 @@ namespace TankGame.Localization
             }
         }
 
+        /// <summary>
+        /// Gets a translation value that corresponds to the given key.
+        /// </summary>
+        /// <param name="key">A translation key</param>
+        /// <returns>A translation value</returns>
         public string GetTranslation(string key)
         {
             string result = null;
@@ -70,6 +79,10 @@ namespace TankGame.Localization
             return result;
         }
 
+        /// <summary>
+        /// Gets all of the language's key and value pairs.
+        /// </summary>
+        /// <returns>Language key and value pairs</returns>
         public Dictionary<string, string> GetValues()
         {
             var result = new Dictionary<string, string>();
@@ -83,6 +96,11 @@ namespace TankGame.Localization
         }
 
 #if UNITY_EDITOR
+
+        /// <summary>
+        /// Sets the language's key and value pairs.
+        /// </summary>
+        /// <param name="translations">Language key and value pairs</param>
         public void SetValues(Dictionary<string, string> translations)
         {
             // Clears the lists before adding new values
@@ -95,11 +113,15 @@ namespace TankGame.Localization
             }
         }
 
+        /// <summary>
+        /// Removes all of the language's key and value pairs.
+        /// </summary>
         public void Clear()
         {
             keys.Clear();
             values.Clear();
         }
+
 #endif
     }
 }

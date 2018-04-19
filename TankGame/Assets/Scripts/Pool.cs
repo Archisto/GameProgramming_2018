@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace TankGame
 {
+    /// <summary>
+    /// A system for storing multiple copies of the same
+    /// object that need to be disabled before use.
+    /// </summary>
+    /// <typeparam name="T">Type of the pooled object</typeparam>
 	public class Pool<T>
         where T : Component
 	{
@@ -23,6 +28,14 @@ namespace TankGame
         // The pooled objects' initialization method
         private Action<T> _initMethod;
 
+        /// <summary>
+        /// A pool for multiple copies of the same object.
+        /// </summary>
+        /// <param name="objectPrefab">The pooled object</param>
+        /// <param name="poolSize">How many copies are there of the object
+        /// </param>
+        /// <param name="shouldGrow">Is a new copy created when attempting
+        /// to get one from the pool but they are all in use</param>
         public Pool(T objectPrefab, int poolSize, bool shouldGrow)
 		{
             _objectPrefab = objectPrefab;
@@ -38,6 +51,16 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// A pool for multiple copies of the same object.
+        /// </summary>
+        /// <param name="objectPrefab">The pooled object</param>
+        /// <param name="poolSize">How many copies are there of the object
+        /// </param>
+        /// <param name="shouldGrow">Is a new copy created when attempting
+        /// to get one from the pool but they are all in use</param>
+        /// <param name="initMethod">An initialization method for the object
+        /// </param>
         public Pool(T objectPrefab, int poolSize, bool shouldGrow, Action<T> initMethod)
             : this(objectPrefab, poolSize, shouldGrow)
         {

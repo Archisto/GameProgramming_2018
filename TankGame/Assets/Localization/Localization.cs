@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace TankGame.Localization
 {
+    /// <summary>
+    /// Language code.
+    /// </summary>
     public enum LangCode
     {
         /// <summary>

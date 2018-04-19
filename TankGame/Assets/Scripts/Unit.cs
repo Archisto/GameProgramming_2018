@@ -7,6 +7,9 @@ using TankGame.Messaging;
 
 namespace TankGame
 {
+    /// <summary>
+    /// A tank unit that moves and fires.
+    /// </summary>
     [RequireComponent(typeof(IMover))]
     public abstract class Unit : MonoBehaviour, IDamageReceiver
     {
@@ -14,6 +17,10 @@ namespace TankGame
 
         private static int idCounter = 0;
 
+        /// <summary>
+        /// Gets the next unused unit ID.
+        /// </summary>
+        /// <returns>A unused unit ID</returns>
         public static int GetNextID()
         {
             var allUnits = FindObjectsOfType<Unit>();
@@ -48,6 +55,9 @@ namespace TankGame
         [SerializeField]
         private int startingHealth;
 
+        /// <summary>
+        /// The unit ID for saving and loading
+        /// </summary>
         [SerializeField, HideInInspector]
         private int id = -1;
 
@@ -60,39 +70,51 @@ namespace TankGame
 
         private float remainingRespawnTime = 0;
 
+        /// <summary>
+        /// Is the unit controlled by a player.
+        /// </summary>
         public bool IsPlayerUnit { get; protected set; }
 
+        /// <summary>
+        /// Called when the object is destroyed.
+        /// </summary>
         private void OnDestroy()
         {
             // Stops listening to the UnitDied event
-            Health.UnitDied -= HandleUnitDied;
+            Health.UnitDied -= OnUnitDied;
         }
 
+        /// <summary>
+        /// Initializes the object.
+        /// </summary>
         public virtual void Init()
         {
+            // Initializes the weapon
             Weapon = GetComponentInChildren<Weapon>();
             if (Weapon != null)
             {
                 Weapon.Init(this);
             }
 
+            // Initializes moving
             mover = gameObject.GetOrAddComponent<TransformMover>();
             mover.Init(moveSpeed, turnSpeed);
 
+            // Initializes turning the cannon
             TransformMover[] headMovers =
                 tankHead.GetComponentsInChildren<TransformMover>();
             headMover = headMovers[0];
             barrelMover = headMovers[1];
-
             headMover.Init(0f, turnSpeed);
             barrelMover.Init(0f, turnSpeed);
 
+            // Initializes health
             Health = new Health(this, startingHealth);
 
-            // Registering to listen to the UnitDied event.
-            // The method must return void and have one parameter.
-            Health.UnitDied += HandleUnitDied;
+            // Registers to listen to the UnitDied event
+            Health.UnitDied += OnUnitDied;
 
+            // Sets spawn position and rotation
             startPosition = transform.position;
             startRotation = transform.rotation;
 
@@ -103,19 +125,21 @@ namespace TankGame
         }
 
         /// <summary>
-        /// Update is called once per frame.
-        /// An abstract method has to be defined
-        /// in a non-abstract child class.
+        /// Updates the object each frame.
         /// </summary>
-        //protected abstract void Update();
-
         protected virtual void Update()
         {
             UpdateRespawn();
         }
 
+        /// <summary>
+        /// The unit's weapon.
+        /// </summary>
         public Weapon Weapon { get; protected set; }
 
+        /// <summary>
+        /// The unit's mover.
+        /// </summary>
         public TransformMover Mover
         {
             get
@@ -124,6 +148,9 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// The unit's cannon's horizontal mover.
+        /// </summary>
         protected IMover TankHeadMover
         {
             get
@@ -132,6 +159,9 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// The unit's cannon's vertical mover.
+        /// </summary>
         protected IMover BarrelMover
         {
             get
@@ -140,14 +170,23 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// The unit's health.
+        /// </summary>
         public Health Health { get; protected set; }
 
+        /// <summary>
+        /// The unit's ID.
+        /// </summary>
         public int ID
         {
             get { return id; }
             private set { id = value; }
         }
 
+        /// <summary>
+        /// The remaining respawn time. Always 0 if the unit is not dead.
+        /// </summary>
         public float RemainingRespawnTime
         {
             get
@@ -167,6 +206,9 @@ namespace TankGame
             }
         }
         
+        /// <summary>
+        /// Handles spawning if the unit is dead.
+        /// </summary>
         protected virtual void UpdateRespawn()
         {
             if (Health != null && Health.IsDead)
@@ -174,73 +216,69 @@ namespace TankGame
                 RemainingRespawnTime -= Time.deltaTime;
                 if (RemainingRespawnTime <= 0)
                 {
-                    ResetUnit();
-                    // Respawn();
+                    Respawn();
                 }
             }
         }
 
+        /// <summary>
+        /// Fires a projectile at the direction of the cannon.
+        /// </summary>
         public virtual void Fire()
         {
             Weapon.Fire();
-
-            //// Calculates the firing direction:
-            //// from the barrel's base to its tip in world space
-            //Vector3 firingDirection = barrelTip.transform.position - ((TransformMover) barrelMover).transform.position;
-
-            //// Changes the firing direction vector's distance to 1
-            //firingDirection.Normalize();
-
-            //// Creates a new projectile
-            //Projectile newProjectile = Instantiate(projectilePrefab);
-            //newProjectile.Init(barrelTip.transform.position, firingDirection, 20);
         }
 
-        //public virtual void Clear()
-        //{
-
-        //}
-
+        /// <summary>
+        /// Deals damage to the unit.
+        /// </summary>
+        /// <param name="amount">Amount of damage</param>
         public void TakeDamage(int amount)
         {
             Health.TakeDamage(amount);
         }
 
-        protected virtual void HandleUnitDied(Unit unit)
+        /// <summary>
+        /// Called when the unit dies.
+        /// </summary>
+        /// <param name="unit">The dead unit (this)</param>
+        protected virtual void OnUnitDied(Unit unit)
         {
-            //Debug.Log(name + " died");
-
             tankModel.SetActive(false);
             RemainingRespawnTime = respawnTime;
             GameManager.Instance.MessageBus.Publish(new UnitDiedMessage(this));
             GameManager.Instance.UnitDied(this, IsPlayerUnit);
 
-            //gameObject.SetActive(false);
+            //Debug.Log(name + " died");
         }
 
-        protected virtual void Respawn()
+        /// <summary>
+        /// Respawns the unit to its original position.
+        /// </summary>
+        public virtual void Respawn()
         {
             Health.RestoreToFull();
             RemainingRespawnTime = 0;
             tankModel.SetActive(true);
+            transform.position = startPosition;
+            transform.rotation = startRotation;
+            ResetTankHead();
             GameManager.Instance.UnitRespawned(this);
 
             //Debug.Log(name + " respawned");
         }
 
-        public void ResetUnit()
-        {
-            Respawn();
-            transform.position = startPosition;
-            transform.rotation = startRotation;
-            ResetTankHead();
-        }
-
+        /// <summary>
+        /// Makes the cannon point forward.
+        /// </summary>
         private void ResetTankHead()
         {
             tankHead.transform.localRotation = Quaternion.Euler(Vector3.zero);
         }
 
+        /// <summary>
+        /// Sets new ID if the current one is invalid.
+        /// </summary>
         public void RequestID()
         {
             if (ID < 0)
@@ -249,6 +287,10 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Gets data of the unit for saving.
+        /// </summary>
+        /// <returns>The unit's data</returns>
         public UnitData GetUnitData()
         {
             return new UnitData
@@ -261,6 +303,10 @@ namespace TankGame
             };
         }
 
+        /// <summary>
+        /// Sets loaded data to this unit.
+        /// </summary>
+        /// <param name="data">Unit data</param>
         public void SetUnitData(UnitData data)
         {
             Health.SetHealth(data.Health, true);
@@ -285,6 +331,9 @@ namespace TankGame
             }
         }
 
+        /// <summary>
+        /// Draws gizmos.
+        /// </summary>
         protected virtual void OnDrawGizmos()
         {
             //if (Health != null && Health.IsDead)
@@ -293,6 +342,9 @@ namespace TankGame
             //}
         }
 
+        /// <summary>
+        /// Draws a red sphere around the unit if is dead.
+        /// </summary>
         private void DrawDeathSphere()
         {
             Gizmos.color = Color.red;

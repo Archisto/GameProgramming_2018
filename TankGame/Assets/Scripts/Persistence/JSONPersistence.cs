@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace TankGame.Persistence
 {
+    /// <summary>
+    /// Converts data to JSON for saving and loading it.
+    /// </summary>
     [Serializable]
     public class JSONPersistence : IPersistence
     {
