@@ -9,18 +9,18 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1126273757217934}
+  m_RootGameObject: {fileID: 1289948444153874}
   m_IsPrefabParent: 1
---- !u!1 &1126273757217934
+--- !u!1 &1289948444153874
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4780079615606514}
-  - component: {fileID: 198816291183645326}
-  - component: {fileID: 199970316401802686}
+  - component: {fileID: 4206123024978558}
+  - component: {fileID: 198015210212824396}
+  - component: {fileID: 199603445569021940}
   m_Layer: 10
   m_Name: ExplosionEffect
   m_TagString: Untagged
@@ -28,12 +28,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4780079615606514
+--- !u!4 &4206123024978558
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1126273757217934}
+  m_GameObject: {fileID: 1289948444153874}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
@@ -41,12 +41,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!198 &198816291183645326
+--- !u!198 &198015210212824396
 ParticleSystem:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1126273757217934}
+  m_GameObject: {fileID: 1289948444153874}
   serializedVersion: 5
   lengthInSec: 0.4
   simulationSpeed: 1
@@ -101,7 +101,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1551394057
+  randomSeed: -1521173334
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3358,13 +3358,13 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!199 &199970316401802686
+--- !u!199 &199603445569021940
 ParticleSystemRenderer:
   serializedVersion: 4
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1126273757217934}
+  m_GameObject: {fileID: 1289948444153874}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0

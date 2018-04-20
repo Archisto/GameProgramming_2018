@@ -76,7 +76,7 @@ namespace TankGame
 
         private List<Unit> enemyUnits = new List<Unit>();
         private Unit playerUnit;
-        private DestroyedTankSpawner destroyedTankSpawner;
+        private CombatSpawner combatSpawner;
         private UI.UI uiObj;
         private PlayerStatusUI playerStatusUI;
         private SaveSystem saveSystem;
@@ -162,7 +162,7 @@ namespace TankGame
             IsClosing = false;
             PlayerLives = MaxLives;
 
-            destroyedTankSpawner = FindObjectOfType<DestroyedTankSpawner>();
+            combatSpawner = FindObjectOfType<CombatSpawner>();
             playerStatusUI = FindObjectOfType<PlayerStatusUI>();
             saveSystem = new SaveSystem(new JSONPersistence(SavePath));
             MessageBus = new MessageBus();
@@ -405,7 +405,7 @@ namespace TankGame
         /// <param name="unit">A respawned unit</param>
         public void UnitRespawned(Unit unit)
         {
-            destroyedTankSpawner.DespawnDestroyedTank(unit);
+            combatSpawner.DespawnDestroyedTank(unit);
         }
 
         /// <summary>
@@ -414,7 +414,17 @@ namespace TankGame
         /// <param name="unit">A dead unit</param>
         public void SpawnDestroyedTank(Unit unit)
         {
-            destroyedTankSpawner.SpawnDestroyedTank(unit);
+            combatSpawner.SpawnDestroyedTank(unit);
+        }
+
+        /// <summary>
+        /// Spawns an explosion to the position
+        /// of a projectile that hit something.
+        /// </summary>
+        /// <param name="position">A position</param>
+        public void SpawnExplosion(Vector3 position)
+        {
+            combatSpawner.SpawnExplosion(position);
         }
 
         /// <summary>
@@ -471,7 +481,9 @@ namespace TankGame
             PlayerLives = MaxLives;
             Score = 0;
 
-            destroyedTankSpawner.DespawnAllDestroyedTanks();
+            combatSpawner.DespawnAllDestroyedTanks();
+            combatSpawner.DespawnAllExplosions();
+
             playerUnit.Respawn();
 
             foreach (Unit enemyUnit in enemyUnits)

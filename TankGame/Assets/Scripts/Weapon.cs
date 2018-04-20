@@ -21,11 +21,6 @@ namespace TankGame
             "the collision point for a limited time")]
         private Hole holePrefab;
 
-        [SerializeField,
-            Tooltip("An explosion effect which is " +
-            "played when a projectile hits something")]
-        private ParticleSystem explosionParticles;
-
         [SerializeField, Tooltip("Projectiles / second")]
         private float firingRate = 1 / 3f;
 
@@ -39,7 +34,6 @@ namespace TankGame
         private ParticleSystem shootParticles;
         private bool canFire = true;
         private float firingTimer = 0;
-        private Vector3 lastHitPosition;
 
         /// <summary>
         /// Initializes the object.
@@ -91,14 +85,9 @@ namespace TankGame
             // Returns the projectile to the pool
             if (projectiles.ReturnObject(projectile))
             {
-                lastHitPosition = projectile.transform.position;
-
                 // Plays particle effects
-                if (explosionParticles != null)
-                {
-                    explosionParticles.transform.position = lastHitPosition;
-                    explosionParticles.Play();
-                }
+                GameManager.Instance.SpawnExplosion
+                    (projectile.transform.position);
             }
             else
             {
@@ -113,12 +102,6 @@ namespace TankGame
         protected virtual void Update()
         {
             UpdateFiringTimer();
-
-            // Keeps the explosion effect at the right position
-            if (explosionParticles != null && explosionParticles.isPlaying)
-            {
-                explosionParticles.transform.position = lastHitPosition;
-            }
         }
 
         /// <summary>

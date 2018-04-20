@@ -48,7 +48,6 @@ namespace TankGame
 
         private Weapon weapon;
         private Rigidbody rBody;
-        private ParticleSystem hitParticles;
 
         /// <summary>
         /// The hole the projectile creates on collision
@@ -86,7 +85,6 @@ namespace TankGame
         public void Init(Action<Projectile> collisionCallback)
         {
             PassCollisionInfoToWeapon = collisionCallback;
-            hitParticles = GetComponent<ParticleSystem>();
             line = FindObjectOfType<DebugLine>();
         }
 
@@ -114,12 +112,6 @@ namespace TankGame
 
             // Passes collision information to the weapon
             PassCollisionInfoToWeapon(this);
-
-            // Plays particle effects
-            if (hitParticles != null)
-            {
-                hitParticles.Play();
-            }
 
             // Creates a hole at the point of impact
             //if (!holeCreated)

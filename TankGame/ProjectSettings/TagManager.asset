@@ -18,8 +18,8 @@ TagManager:
   - Enemy
   - PlayerProjectile
   - EnemyProjectile
-  - Ground
-  - Collectable
+  - Environment
+  - Collectables
   - 
   - 
   - 

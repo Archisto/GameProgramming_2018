@@ -7,9 +7,10 @@ using Random = UnityEngine.Random;
 namespace TankGame
 {
     /// <summary>
-    /// A class which spawns destroyed tanks to the positions of dead unit.
+    /// A class which spawns explosions to where projectiles hit and
+    /// destroyed tanks to the positions of dead unit.
     /// </summary>
-    public class DestroyedTankSpawner : MonoBehaviour
+    public class CombatSpawner : MonoBehaviour
     {
         /// <summary>
         /// A model of a destroyed tank
@@ -18,22 +19,36 @@ namespace TankGame
         private GameObject destroyedTankPrefab;
 
         /// <summary>
+        /// An explosion effect
+        /// </summary>
+        [SerializeField]
+        private ParticleSystem explosionPrefab;
+
+        /// <summary>
         /// The size of the destroyed tank pool
         /// </summary>
         [SerializeField]
-        private int poolSize;
+        private int destroyedTankPoolSize;
+
+        /// <summary>
+        /// The size of the explosion pool
+        /// </summary>
+        [SerializeField]
+        private int explosionPoolSize;
 
         /// <summary>
         /// Is a new item created when attempting
-        /// to get one from the pool but it's empty
+        /// to get one from a pool but it's empty
         /// </summary>
         [SerializeField]
-        private bool poolShouldGrow;
+        private bool poolsShouldGrow;
 
         private Pool<Transform> destroyedTankPool;
+        private Pool<ParticleSystem> explosionPool;
 
         private List<Transform> destroyedTanks;
         private List<int> unitIDs;
+        private List<ParticleSystem> explosions;
 
         /// <summary>
         /// Initializes the object.
@@ -41,10 +56,33 @@ namespace TankGame
         private void Start()
         {
             destroyedTankPool = new Pool<Transform>
-                (destroyedTankPrefab.transform, poolSize, poolShouldGrow);
+                (destroyedTankPrefab.transform, destroyedTankPoolSize, poolsShouldGrow);
+            explosionPool = new Pool<ParticleSystem>
+                (explosionPrefab, explosionPoolSize, poolsShouldGrow);
 
             destroyedTanks = new List<Transform>();
             unitIDs = new List<int>();
+            explosions = new List<ParticleSystem>();
+        }
+
+        private void Update()
+        {
+            UpdateExplosions();
+        }
+
+        /// <summary>
+        /// Despawns explosions when they expire.
+        /// </summary>
+        public void UpdateExplosions()
+        {
+            for (int i = explosions.Count - 1; i >= 0; i--)
+            {
+                if ( !explosions[i].isPlaying )
+                {
+                    ReturnItemToPool(explosions[i]);
+                    explosions.RemoveAt(i);
+                }
+            }
         }
 
         /// <summary>
@@ -64,6 +102,22 @@ namespace TankGame
                 // lists so that removing the correct destroyed tank is possible
                 destroyedTanks.Add(dTankTransform);
                 unitIDs.Add(unit.ID);
+            }
+        }
+
+        /// <summary>
+        /// Spawns an explosion to the given position.
+        /// </summary>
+        /// <param name="position">A position</param>
+        public void SpawnExplosion(Vector3 position)
+        {
+            ParticleSystem explosion = explosionPool.GetPooledObject(true);
+
+            if (explosion != null)
+            {
+                explosion.transform.position = position;
+                explosions.Add(explosion);
+                explosion.Play();
             }
         }
 
@@ -88,7 +142,7 @@ namespace TankGame
         }
 
         /// <summary>
-        /// Removes all destroyed tanks form the world.
+        /// Removes all destroyed tanks from the world.
         /// </summary>
         public void DespawnAllDestroyedTanks()
         {
@@ -102,6 +156,19 @@ namespace TankGame
         }
 
         /// <summary>
+        /// Removes all explosions from the world.
+        /// </summary>
+        public void DespawnAllExplosions()
+        {
+            foreach (ParticleSystem explosion in explosions)
+            {
+                ReturnItemToPool(explosion);
+            }
+
+            explosions.Clear();
+        }
+
+        /// <summary>
         /// Returns an item to the item pool.
         /// </summary>
         /// <param name="destroyedTankTransform">
@@ -109,6 +176,15 @@ namespace TankGame
         public void ReturnItemToPool(Transform destroyedTankTransform)
         {
             destroyedTankPool.ReturnObject(destroyedTankTransform);
+        }
+
+        /// <summary>
+        /// Returns an item to the item pool.
+        /// </summary>
+        /// <param name="explosion">An explosion object</param>
+        public void ReturnItemToPool(ParticleSystem explosion)
+        {
+            explosionPool.ReturnObject(explosion);
         }
     }
 }
