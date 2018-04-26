@@ -43,8 +43,16 @@ namespace TankGame.Persistence
         /// <returns>loaded data of the given type</returns>
         public T Load<T>()
         {
-            string jsonData = File.ReadAllText(FilePath, Encoding.UTF8);
-            return JsonUtility.FromJson<T>(jsonData);
+            if (File.Exists(FilePath))
+            {
+                string jsonData = File.ReadAllText(FilePath, Encoding.UTF8);
+                return JsonUtility.FromJson<T>(jsonData);
+            }
+            else
+            {
+                Debug.LogWarning("Could not find file to load.");
+                return default(T);
+            }
         }
     }
 }

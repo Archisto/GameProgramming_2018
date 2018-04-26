@@ -336,6 +336,12 @@ namespace TankGame
         {
             GameData data = saveSystem.Load();
 
+            if (data == null)
+            {
+                Debug.LogWarning("Game not loaded");
+                return null;
+            }
+
             ResetGame();
 
             GameWon = data.GameWon;
